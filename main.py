@@ -4,9 +4,9 @@ from scipy.stats import qmc
 
 import resultat
 
-dim = 8 # liczba zmiennych w f. testowej
+dim = 6 # liczba zmiennych w f. testowej
 n_particle = 8 #liczbę cząstek
-dims = [-100, 100] #dziedzina f. testowej
+dims = [0, 1] #dziedzina f. testowej
 phi_p = 0.5 #skalowanie przyciągania przez najlepsze położenie lokalne cząstki
 phi_g = 0.6 #skalowanie przyciągania przez cząstkę w roju najlepszą
 max_iter = 500 #Ile razy wykona się przemieszczanie się roju

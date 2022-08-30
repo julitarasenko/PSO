@@ -1,8 +1,8 @@
 import math
 import numpy as np
 
-def problem1():
-    x=[0.217000000000000,0.0240000000000000,0.0760000000000000,0.892000000000000,0.128000000000000,0.250000000000000]
+def problem1(x):
+    #x=[0.217000000000000,0.0240000000000000,0.0760000000000000,0.892000000000000,0.128000000000000,0.250000000000000]
     d = np.size(x)
     if d<6:
         print('dimension-size should be six.')
@@ -17,5 +17,5 @@ def problem1():
         f=f+(y_t-y_0_t)**2
     return f
 
-f = problem1()
-print(f)
+# f = problem1()
+# print(f)

@@ -3,6 +3,7 @@ import math
 from scipy.stats import qmc, levy
 
 import plots
+import problem1
 
 def metodapso(dim,n_particle,swarm,om, phi_p,phi_g,max_iter,dims):
     omega = 0.3
@@ -25,7 +26,7 @@ def metodapso(dim,n_particle,swarm,om, phi_p,phi_g,max_iter,dims):
                 g_best_particle = swarm[i]
         #obliczanie wartości cząstki wg zadanej funkcji
         for i in range(n_particle):
-            fitness[i] = plots.spheref(swarm[i,:])
+            fitness[i] = problem1.problem1(swarm[i,:])
             if fitness[i] < p_best[i]:
                p_best[i] = fitness[i]
                p_best_particle = swarm[i]
