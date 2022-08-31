@@ -2,6 +2,7 @@ import pandas as pd
 import math
 import scipy.stats as ss
 from pso import pso
+from problem1 import problem1
 
 def HalvingSHA( generator_set):
     #minimum resources
@@ -33,10 +34,16 @@ def HalvingSHA( generator_set):
 
     for i in range(0,(sMax-s)):
         ni = math.floor(n*math.pow(2, -i)) #number of setups for the iteration
-        ri = r * math.pow(2, (i+s)) #number of resources in the iteration
+        ri = r * math.pow(2, (i+s)) #number of resources in the iteration or swarm size?
 
         for j in range(1,ni):
-            pso(3,10,[-10,10],setup)
+            # Problems dim and range (powinien być już znany na tym etapie)
+            dim = 6
+            domain = [0, 1]
+
+            # run pso for given setup and given problem
+            swarm_size = int(ri*100)
+            pso(dim, swarm_size, domain, setup[j], problem1)
 
     # if gen_len == 3:
     #     return generator_set[0](generator_set[1], generator_set[2], size=10)
@@ -49,10 +56,10 @@ def HalvingSHA( generator_set):
 # (ss.alpha.rvs) x>0, a>0 a=2 dla phi
 random_gen = {'swarm': [(ss.norm.rvs,), (ss.uniform.rvs,)],
         # (ss.f.rvs, 29, 18), (ss.levy.rvs, 10, 2),],
-        'omega': [(ss.arcsine.rvs),(ss.norm.rvs,), (ss.uniform.rvs,)],
+        'omega': [(ss.arcsine.rvs,),(ss.norm.rvs,), (ss.uniform.rvs,)],
         # (ss.f.rvs, 29, 18), (ss.levy.rvs, 10, 2),],
-        'phi_p': [(ss.alpha.rvs, 2), (ss.arcsine.rvs),
-                (ss.uniform.rvs,)],
-        'phi_g': [(ss.alpha.rvs,2),(ss.arcsine.rvs), (ss.uniform.rvs,)]
+        'phi_p': [(ss.alpha.rvs, 2), (ss.arcsine.rvs,), (ss.uniform.rvs,)],
+        'phi_g': [(ss.arcsine.rvs,), (ss.uniform.rvs,)]
         }
+
 print(HalvingSHA( random_gen))

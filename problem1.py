@@ -1,20 +1,23 @@
 import math
 import numpy as np
 
+
+# I have change the function to accpet array not only single vector
 def problem1(x):
     #x=[0.217000000000000,0.0240000000000000,0.0760000000000000,0.892000000000000,0.128000000000000,0.250000000000000]
-    d = np.size(x)
-    if d<6:
+    d1, d2 = x.shape
+    if d1<6:
         print('dimension-size should be six.')
-    if d>6:
+    if d1>6:
         print('dimension-size is more than 6.')
         print('function has been evaluated on first six dimensions.')
     theta=2*math.pi/100
     f=0
-    for t in range (100):
-        y_t=x[0]*math.sin(x[1]*t*theta+x[2]*math.sin(x[3]*t*theta+x[4]*math.sin(x[5]*t*theta)))
-        y_0_t=1*math.sin(5*t*theta-1.5*math.sin(4.8*t*theta+2*math.sin(4.9*t*theta)))
-        f=f+(y_t-y_0_t)**2
+    for t in range(100):
+        tt= t * theta
+        y_t = x[0] * np.sin(x[1] * tt + x[2] * np.sin(x[3] * tt + x[4] * np.sin(x[5] * tt)))
+        y_0_t = np.sin(5 * tt - 1.5 * np.sin(4.8 * tt + 2 * np.sin(4.9 * tt)))
+        f = f + (y_t - y_0_t)**2
     return f
 
 # f = problem1()
