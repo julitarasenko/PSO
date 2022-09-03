@@ -55,8 +55,10 @@ def pso(d, swarm_size, domain, sets, test): # Hyper-parameter of the algorithm
 
     max_iter = 5 #Ile razy wykona się przemieszczanie się roju
     fitness = np.zeros((swarm_size,1))
-    results = np.zeros((max_iter,1))
+    results = np.zeros((max_iter,3))
+    sumcorrection = 0
     X = X.T
+
     # PSO Loop
     for j in range(max_iter):
         for i in range(swarm_size):
@@ -64,6 +66,7 @@ def pso(d, swarm_size, domain, sets, test): # Hyper-parameter of the algorithm
             if pBest_fit[i] < gBest_fit:
                 gBest_fit = pBest_fit[i]
                 gBest = X[i] 
+                
         #obliczanie wartości cząstki wg zadanej funkcji
         for i in range(swarm_size):
             fitness[i] = test(X[i])
@@ -71,22 +74,22 @@ def pso(d, swarm_size, domain, sets, test): # Hyper-parameter of the algorithm
                pBest_fit[i] = fitness[i]
                pBest = X[i]
             V[i] = w * V[i] + phi_p * np.random.rand(1,d).dot(pBest - X[i]) + phi_g * np.random.rand(1,d).dot(gBest - X[i])
-            if V[i][0] > 1/3 * abs(domain[1] - domain[0]):
-                V[i][0] = 1/3 * abs(domain[1] - domain[0])
-            if V[i][1] > 1/3 * abs(domain[1] - domain[0]): 
-                V[i][1] = 1/3 * abs(domain[1] - domain[0])
+            for n in range(d):
+                if V[i][n] > 1/3 * abs(domain[1] - domain[0]):
+                    V[i][n] = 1/3 * abs(domain[1] - domain[0])
             # sprawdzenie rozpędzającej się cząstki i ustawić na wartość
             # max_vel
-            X[i] = X[i] + V[i]  
-            if X[i][0] < domain[0]:
-                X[i] = domain[0]
-            if X[i][0] > domain[1]:
-                X[i] = domain[1]
-            if X[i][1] < domain[0]:
-                X[i] = domain[0]
-            if X[i][1] > domain[1]:
-                X[i] = domain[1]
+            X[i] = X[i] + V[i] 
+
+            for n in range(d):
+                if X[i][n] < domain[0]:
+                    X[i][n] = domain[0]
+                    sumcorrection += 1
+                if X[i][n] > domain[1]:
+                    X[i][n] = domain[1]
+                    sumcorrection += 1
             # kontrola położenia cząstki w założonej dziedzinie, jeżeli poza,
             # to ustawić na wartość odpowiednio min lub max
-        results[j] = gBest_fit
+
+        results[j] = [gBest_fit, max_iter, sumcorrection]
     return X, results
