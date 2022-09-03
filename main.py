@@ -17,7 +17,6 @@ N = 2 #Ile razy wykona sie metodapso dla jednego rozkladu
 quasirandom = qmc.Sobol(dim, scramble=True)
 quasirandom = quasirandom.random(n_particle)
 swarm = dims[0] + quasirandom*(dims[1] - dims[0])
-
 resultat1 = resultat.resultat(N, dim,n_particle,swarm, 1, phi_p,phi_g,max_iter,dims)
 resultat2 = resultat.resultat(N, dim,n_particle,swarm, 2, phi_p,phi_g,max_iter,dims)
 resultat3 = resultat.resultat(N, dim,n_particle,swarm, 3, phi_p,phi_g,max_iter,dims)

@@ -32,9 +32,12 @@ def HalvingSHA( generator_set):
                     setup.append([i1, i2, i3, i4])
                     #print(setup)
 
+    # print("sMax-s", sMax-s)
+    
     for i in range(0,(sMax-s)):
         ni = math.floor(n*math.pow(2, -i)) #number of setups for the iteration
         ri = r * math.pow(2, (i+s)) #number of resources in the iteration or swarm size?
+        # print("ni", ni)
 
         for j in range(1,ni):
             # Problems dim and range (powinien być już znany na tym etapie)
@@ -43,7 +46,8 @@ def HalvingSHA( generator_set):
 
             # run pso for given setup and given problem
             swarm_size = int(ri*100)
-            pso(dim, swarm_size, domain, setup[j], problem1)
+            X = pso(dim, swarm_size, domain, setup[j], problem1)
+    print(X)
 
     # if gen_len == 3:
     #     return generator_set[0](generator_set[1], generator_set[2], size=10)
@@ -62,4 +66,4 @@ random_gen = {'swarm': [(ss.norm.rvs,), (ss.uniform.rvs,)],
         'phi_g': [(ss.arcsine.rvs,), (ss.uniform.rvs,)]
         }
 
-print(HalvingSHA( random_gen))
+print("random_gen: ", HalvingSHA(random_gen))
