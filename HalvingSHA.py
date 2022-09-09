@@ -1,8 +1,13 @@
+from cmath import pi
 import pandas as pd
 import math
 import scipy.stats as ss
 from pso import pso
 from problem1 import problem1
+from problem2 import problem2
+from problem5 import problem5
+from problem6 import problem6
+from problem7 import problem7
 
 def HalvingSHA( generator_set):
     #minimum resources
@@ -39,12 +44,13 @@ def HalvingSHA( generator_set):
 
         for j in range(1,ni):
             # Problems dim and range (powinien być już znany na tym etapie)
-            dim = 6
-            domain = [0, 1]
+            dim = 20
+            domain = [0, 2*pi]
 
             # run pso for given setup and given problem
-            swarm_size = int(ri*100)
-            X, results = pso(dim, swarm_size, domain, setup[j], problem1)
+            # swarm_size = int(ri*100)
+            swarm_size = 10
+            X, results = pso(dim, swarm_size, domain, setup[j], problem7)
     print(X,results)
 
     # if gen_len == 3:

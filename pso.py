@@ -54,25 +54,20 @@ def pso(d, swarm_size, domain, sets, test): # Hyper-parameter of the algorithm
     gBest = np.zeros(d)
 
     max_iter = 5 #Ile razy wykona się przemieszczanie się roju
-    fitness = np.zeros((swarm_size,1))
     results = np.zeros((max_iter,3))
     sumcorrection = 0
     X = X.T
 
     # PSO Loop
     for j in range(max_iter):
-        for i in range(swarm_size):
-            # znajdowanie najlepszej cząstki w roju
-            if pBest_fit[i] < gBest_fit:
-                gBest_fit = pBest_fit[i]
-                gBest = X[i] 
-                
+        gBest_fit = pBest_fit.min()
+        gBest = X[pBest_fit.argmin()]
+        
         #obliczanie wartości cząstki wg zadanej funkcji
+        pBest_fit = test(X)
+        pBest = X[pBest_fit.argmin()]
+
         for i in range(swarm_size):
-            fitness[i] = test(X[i])
-            if fitness[i] < pBest_fit[i]:
-               pBest_fit[i] = fitness[i]
-               pBest = X[i]
             V[i] = w * V[i] + phi_p * np.random.rand(1,d).dot(pBest - X[i]) + phi_g * np.random.rand(1,d).dot(gBest - X[i])
             for n in range(d):
                 if V[i][n] > 1/3 * abs(domain[1] - domain[0]):

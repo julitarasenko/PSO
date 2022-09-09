@@ -4,12 +4,13 @@ import numpy as np
 
 # I have change the function to accpet array not only single vector
 def problem1(x):
+    x = x.T
     #x=[0.217000000000000,0.0240000000000000,0.0760000000000000,0.892000000000000,0.128000000000000,0.250000000000000]
     if len(x) == np.size(x):
         d1 = np.size(x)
     else:
         d1, d2 = x.shape
-        
+
     if d1<6:
         print('dimension-size should be six.')
     if d1>6:
