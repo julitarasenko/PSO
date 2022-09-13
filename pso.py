@@ -36,10 +36,10 @@ def pso(d, swarm_size, domain, sets, test): # Hyper-parameter of the algorithm
         phi_g = sets[3][0](sets[3][1], size=d)
 
     # # Create particles inside the range
-    if len(sets[3]) == 1:
-        X_ = sets[0][0](size=(d, swarm_size))
+    if len(sets[0]) == 1:
+        X_ = sets[0][0](size=(swarm_size, d))
     else:
-        X_ = sets[0][0](sets[0][1], size=(d, swarm_size))
+        X_ = sets[0][0](sets[0][1], size=(swarm_size, d))
     # Transformation to a given domain
     old_min, old_max = X_.min(), X_.max()
     X = ((X_ - old_min) / (old_max - old_min)) * (domain[1] - domain[0]) + domain[0]
@@ -56,7 +56,6 @@ def pso(d, swarm_size, domain, sets, test): # Hyper-parameter of the algorithm
     max_iter = 5 #Ile razy wykona się przemieszczanie się roju
     results = np.zeros((max_iter,3))
     sumcorrection = 0
-    X = X.T
 
     # PSO Loop
     for j in range(max_iter):

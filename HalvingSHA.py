@@ -44,13 +44,12 @@ def HalvingSHA( generator_set):
 
         for j in range(1,ni):
             # Problems dim and range (powinien być już znany na tym etapie)
-            dim = 20
-            domain = [0, 2*pi]
+            dim = 6
+            domain = [0, 1]
 
             # run pso for given setup and given problem
-            # swarm_size = int(ri*100)
-            swarm_size = 10
-            X, results = pso(dim, swarm_size, domain, setup[j], problem7)
+            swarm_size = int(ri*100)
+            X, results = pso(dim, swarm_size, domain, setup[j], problem1)
     print(X,results)
 
     # if gen_len == 3:
@@ -69,5 +68,30 @@ random_gen = {'swarm': [(ss.norm.rvs,), (ss.uniform.rvs,)],
         'phi_p': [(ss.alpha.rvs, 2), (ss.arcsine.rvs,), (ss.uniform.rvs,)],
         'phi_g': [(ss.arcsine.rvs,), (ss.uniform.rvs,)]
         }
+
+param_problem1 = {
+    'dim': 6,
+    'domain': [-6.4, 6.5]
+}
+
+param_problem2 = {
+    'dim': 3,
+    'domain': [0, 4]
+}
+
+param_problem5 = {
+    'dim': 3,
+    'domain': [0, 4]
+}
+
+param_problem6 = {
+    'dim': 3,
+    'domain': [0, 4]
+}
+
+param_problem7 = {
+    'dim': 20,
+    'domain': [0, 2*pi]
+}
 
 print("random_gen: ", HalvingSHA(random_gen))
