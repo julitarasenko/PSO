@@ -67,7 +67,7 @@ def ackley(xx):
     y = term1 + term2 + a + math.exp(1)
     return y
 
-# 2. Griewank function (nonseparable)
+# 34. Griewank function (nonseparable)
 def griewank(xx):
     d = len(xx)
     sum = 0
@@ -79,7 +79,7 @@ def griewank(xx):
     y = sum - prod + 1
     return y 
 
-# 3. Alpine function (separable) 
+# 2. Alpine function (separable) 
 def alpine(xx):
     d = len(xx)
     sum = 0
