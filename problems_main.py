@@ -1,5 +1,5 @@
-import scipy.stats as ss
 import numpy as np
+from scipy import stats as ss
 from cmath import pi
 from problem1 import problem1
 from problem2 import problem2
@@ -36,7 +36,7 @@ for i in range(np.size(param_problem['name'])):
     print(problem, dim, domain)
     HalvingSHA(random_gen, problem, dim, domain)
 
-dim = 10 
+dim = 10
 
 param_ftest = {
     'name' : [spheref, zakharov, rosenbrock, modified_rosenbrock, easom, ackley, griewank, alpine, perm, schwefel, yang3, yang4, csendes, yang2, levy],

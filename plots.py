@@ -4,13 +4,15 @@ import numpy as np
 #Funkcje unimodalne: 
 #20. Sphere function (separable)
 def spheref(xx):
-    d = len(xx)
-    sum = 0
-    for ii in range(d):
-        xi = xx[ii]
-        sum = sum + xi**2
-    y = sum
-    return y
+
+    return np.sum(np.square(xx), axis=1)
+    # d = len(xx)
+    # sum = 0
+    # for ii in range(d):
+    #     xi = xx[ii]
+    #     sum = sum + xi**2
+    # y = sum
+    # return y
 
 #24. Zakharov function (nonseparable) 
 def zakharov(xx):
