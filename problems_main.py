@@ -17,17 +17,17 @@ random_gen = {'swarm': [(ss.norm.rvs,), (ss.uniform.rvs,)],
         'phi_g': [(ss.arcsine.rvs,), (ss.uniform.rvs,)]
         }
 
-# param_problem = {
-#     'name' : [problem1, problem2, problem5, problem6, problem7],
-#     'dim': [6, 3, 3, 3, 20],
-#     'domain': [[-6.4, 6.5], [0, 4], [0, 4], [0, 4], [0, 2*pi]]
-# }
-
 param_problem = {
-    'name' : [problem1],
-    'dim': [6],
-    'domain': [[-6.4, 6.5]]
+    'name' : [problem1, problem2, problem5, problem6, problem7],
+    'dim': [6, 3, 3, 3, 20],
+    'domain': [[-6.4, 6.5], [[0, 4], [0, 4], [0, np.pi]], [[0, 4], [0, 4], [0, np.pi]], [[0, 4], [0, 4], [0, np.pi]], [0, 2*pi]]
 }
+
+# param_problem = {
+#     'name' : [problem2],
+#     'dim': [3],
+#     'domain': [[[0, 4], [0, 4], [0, np.pi]]]
+# }
 
 for i in range(np.size(param_problem['name'])):
     problem = param_problem['name'][i]
