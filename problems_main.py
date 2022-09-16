@@ -23,12 +23,6 @@ param_problem = {
     'domain': [[-6.4, 6.5], [[0, 4], [0, 4], [0, np.pi]], [[0, 4], [0, 4], [0, np.pi]], [[0, 4], [0, 4], [0, np.pi]], [0, 2*pi]]
 }
 
-# param_problem = {
-#     'name' : [problem2],
-#     'dim': [3],
-#     'domain': [[[0, 4], [0, 4], [0, np.pi]]]
-# }
-
 for i in range(np.size(param_problem['name'])):
     problem = param_problem['name'][i]
     dim = param_problem['dim'][i]
