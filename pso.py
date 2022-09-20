@@ -12,7 +12,6 @@
         fitness <- problem to be solved
 """
 import numpy as np
-from scipy.stats import qmc
 
 def pso(d, swarm_size, domain, sets, test): # Hyper-parameter of the algorithm
     # Get all sets
