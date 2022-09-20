@@ -12,7 +12,6 @@
         fitness <- problem to be solved
 """
 import numpy as np
-from scipy.stats import qmc
 
 def pso_domain(d, swarm_size, domain, sets, test): # Hyper-parameter of the algorithm
     # Get all sets
@@ -74,7 +73,7 @@ def pso_domain(d, swarm_size, domain, sets, test): # Hyper-parameter of the algo
                 X_[X_ > domain[i][1]] = domain[i][1]
                 x_corr += len(X_[(X_ < domain[i][0]) | (X_ > domain[i][1])])
             X[:, i] = X_
-            
+
         # max_vel control
         if( any(V[(V < -V_max) | (V > V_max)])):
             V[V < -V_max] = -V_max
