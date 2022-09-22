@@ -13,7 +13,7 @@
 """
 import numpy as np
 
-def pso_domain(d, swarm_size, domain, sets, test): # Hyper-parameter of the algorithm
+def pso_domain(d, swarm_size, domain, sets, test, max_iter): # Hyper-parameter of the algorithm
     # Get all sets
     # If test the touple length and based on this the random function param are set up
 
@@ -55,7 +55,6 @@ def pso_domain(d, swarm_size, domain, sets, test): # Hyper-parameter of the algo
     gBest = X[pBest_fit.argmin()]
     gBest_fit = pBest_fit.min()
 
-    max_iter = 5  # !!!!Set this as the parameter in halving!!
     results = []
 
     # PSO Loop

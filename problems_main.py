@@ -9,6 +9,9 @@ from problem7 import problem7
 from HalvingSHA import HalvingSHA
 from plots import spheref, zakharov, rosenbrock, modified_rosenbrock, easom, ackley, griewank, alpine, perm, schwefel, yang3, yang4, csendes, yang2, levy
 
+n = 10
+max_iter = 5
+
 random_gen = {'swarm': [(ss.norm.rvs,), (ss.uniform.rvs,)],
         # (ss.f.rvs, 29, 18), (ss.levy.rvs, 10, 2),],
         'omega': [(ss.arcsine.rvs,),(ss.norm.rvs,), (ss.uniform.rvs,)],
@@ -28,9 +31,8 @@ for i in range(np.size(param_problem['name'])):
     dim = param_problem['dim'][i]
     domain = param_problem['domain'][i]
     print(problem, dim, domain)
-    HalvingSHA(random_gen, problem, dim, domain)
+    HalvingSHA(random_gen, problem, dim, domain, max_iter)
 
-n = 10
 param_ftest = {
     'name' : [spheref, zakharov, rosenbrock, modified_rosenbrock, easom, ackley, griewank, alpine, perm, schwefel, yang3, yang4, csendes, yang2, levy],
     'dim' : [inf, inf, inf, 4, 2, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf],
@@ -45,4 +47,4 @@ for i in range(np.size(param_ftest['name'])):
         dim = n
     domain = param_ftest['domain'][i]
     print(ftest, dim, domain)
-    HalvingSHA(random_gen, ftest, dim, domain)
+    HalvingSHA(random_gen, ftest, dim, domain, max_iter)

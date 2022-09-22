@@ -6,7 +6,7 @@ import scipy.stats as ss
 from pso import pso
 from pso_domain import pso_domain 
 
-def HalvingSHA(generator_set, problem, dim, domain):
+def HalvingSHA(generator_set, problem, dim, domain, max_iter):
     #minimum resources
     r = 1
 
@@ -45,9 +45,9 @@ def HalvingSHA(generator_set, problem, dim, domain):
             # print("Problem:", problem, dim, domain)
             # print("Setup:", setup[j])
             if len(domain) == np.size(domain):
-                X, results = pso(dim, swarm_size, domain, setup[j], problem)
+                X, results = pso(dim, swarm_size, domain, setup[j], problem, max_iter)
             else:
-                X, results = pso_domain(dim, swarm_size, domain, setup[j], problem)
+                X, results = pso_domain(dim, swarm_size, domain, setup[j], problem, max_iter)
     print(X, results)
 
     # if gen_len == 3:
