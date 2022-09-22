@@ -1,4 +1,5 @@
 import numpy as np
+import time
 from scipy import stats as ss
 from cmath import inf, pi
 from problem1 import problem1
@@ -11,6 +12,7 @@ from plots import spheref, zakharov, rosenbrock, modified_rosenbrock, easom, ack
 
 n = 10
 max_iter = 5
+f = open('data.csv', 'a')
 
 random_gen = {'swarm': [(ss.norm.rvs,), (ss.uniform.rvs,)],
         # (ss.f.rvs, 29, 18), (ss.levy.rvs, 10, 2),],
@@ -31,7 +33,13 @@ for i in range(np.size(param_problem['name'])):
     dim = param_problem['dim'][i]
     domain = param_problem['domain'][i]
     print(problem, dim, domain)
-    HalvingSHA(random_gen, problem, dim, domain, max_iter)
+    start = time.time()
+    X, results = HalvingSHA(random_gen, problem, dim, domain, max_iter)
+    finish = time.time()
+    t = finish - start 
+    gBest_fit = results[len(results) - 1][1]
+    f.write(str(problem).partition(' ')[2].partition(' ')[0] + ';' + str(t) + ';' + str(gBest_fit))
+    f.write('\n')
 
 param_ftest = {
     'name' : [spheref, zakharov, rosenbrock, modified_rosenbrock, easom, ackley, griewank, alpine, perm, schwefel, yang3, yang4, csendes, yang2, levy],
@@ -47,4 +55,12 @@ for i in range(np.size(param_ftest['name'])):
         dim = n
     domain = param_ftest['domain'][i]
     print(ftest, dim, domain)
-    HalvingSHA(random_gen, ftest, dim, domain, max_iter)
+    start = time.time()
+    X, results = HalvingSHA(random_gen, ftest, dim, domain, max_iter)
+    finish = time.time()
+    t = finish - start
+    gBest_fit = results[len(results) - 1][1]
+    f.write(str(ftest).partition(' ')[2].partition(' ')[0] + ';' + str(t) + ';' + str(gBest_fit))
+    f.write('\n')
+
+f.close()

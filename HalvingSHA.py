@@ -48,7 +48,7 @@ def HalvingSHA(generator_set, problem, dim, domain, max_iter):
                 X, results = pso(dim, swarm_size, domain, setup[j], problem, max_iter)
             else:
                 X, results = pso_domain(dim, swarm_size, domain, setup[j], problem, max_iter)
-    print(X, results)
+    return X, results
 
     # if gen_len == 3:
     #     return generator_set[0](generator_set[1], generator_set[2], size=10)
