@@ -1,11 +1,8 @@
 import math
 import numpy as np
 
-
-# I have change the function to accpet array not only single vector
 def problem1(x):
     x = x.T
-    #x=[0.217000000000000,0.0240000000000000,0.0760000000000000,0.892000000000000,0.128000000000000,0.250000000000000]
     if len(x) == np.size(x):
         d1 = np.size(x)
     else:
@@ -24,6 +21,3 @@ def problem1(x):
         y_0_t = np.sin(5 * tt - 1.5 * np.sin(4.8 * tt + 2 * np.sin(4.9 * tt)))
         f = f + (y_t - y_0_t)**2
     return f
-
-# f = problem1()
-# print(f)

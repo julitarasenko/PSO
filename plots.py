@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 #Funkcje unimodalne: 
 #20. Sphere function (separable)
@@ -7,24 +8,24 @@ def spheref(xx):
 
 #24. Zakharov function (nonseparable) 
 def zakharov(xx):
-    d = len(xx.T)
-    arr = []
-    for ii in range(d):
-        arr.append(ii)
+    d1, d = xx.shape
+    arr = np.linspace(0, d - 1, d)
     sum1 = np.sum(np.square(xx), axis = 1)
     sum2 = np.sum(arr * xx * 0.5, axis = 1)
     return sum1 + sum2**2 + sum2**4
 
 #Rosenbrock function (nonseparable) global 
 def rosenbrock(xx):
-    arr1 = xx[:, 0:len(xx.T) - 1]
+    d1, d = xx.shape
+    arr1 = xx[:, 0 : d - 1]
     arr2 = xx[:, 1:]
     return np.sum(100*np.square(arr2 - np.square(arr1)) + np.square(arr1 - 1), axis = 1)
 
 #Modified Rosenbrock function (nonseparable) 
 def modified_rosenbrock(xx):
+    d1, d = xx.shape
     xx = 15 * xx - 5
-    arr1 = xx[:, 0:len(xx.T) - 1]
+    arr1 = xx[:, 0 : d - 1]
     arr2 = xx[:, 1:]
     return (np.sum(100*np.square(arr2 - np.square(arr1)) + np.square(arr1 - 1), axis = 1) - 382700) / 375500
 
@@ -39,7 +40,7 @@ def easom(xx):
 #Multimodal: 
 # 1. Ackley function (nonseparable) 
 def ackley(xx):
-    d = len(xx.T)
+    d1, d = xx.shape
     c = 2 * np.pi
     b = 0.2
     a = 20
@@ -51,10 +52,8 @@ def ackley(xx):
 
 # 34. Griewank function (nonseparable)
 def griewank(xx):
-    d = len(xx.T)
-    arr = []
-    for ii in range(d):
-        arr.append(ii + 1)
+    d1, d = xx.shape
+    arr = np.linspace(1, d, d)
     sum = np.sum(np.square(xx) / 4000, axis = 1)
     prod = np.prod(np.cos(xx / np.sqrt(arr)), axis = 1)
     return sum - prod + 1 
@@ -66,12 +65,9 @@ def alpine(xx):
 # 76. Perm function (separable) 
 def perm(xx):
     b = 10
-    d = len(xx.T)
-    arr = []
-    arrb = []
-    for ii in range(d):
-        arr.append(ii + 1)
-        arrb.append(ii + 1 + b)
+    d1, d = xx.shape
+    arr = np.linspace(1, d, d)
+    arrb = np.linspace(1 + b, d + b, d)
     outer = 0
     for kk in range(d):
         inner = np.sum(arrb * ((xx / arr)**(kk + 1) - 1), axis = 1)
@@ -80,7 +76,7 @@ def perm(xx):
 
 # 86. Schwefel function (nonseparable) 
 def schwefel(xx):
-    d = len(xx.T)
+    d1, d = xx.shape
     sum = np.sum(xx * np.sin(np.sqrt(abs(xx))), axis = 1)
     return 418.9829 * d - sum
 
@@ -105,16 +101,14 @@ def csendes(xx):
 
 # 111. Yang 2 function (separable) 
 def yang2(xx):
-    d = len(xx.T)
+    d1, d = xx.shape
     rand = np.random.uniform(0,1,d)
-    arr = []
-    for ii in range(d):
-        arr.append(ii + 1)
+    arr = np.linspace(1, d, d)
     return np.sum(rand * abs(xx)**arr, axis = 1)
 
 # 55. Levy 8 function (nonseparable) 
 def levy(xx):
-    d = len(xx.T)
+    d1, d = xx.shape
     w = 1 + (xx - 1) / 4
     term1 = (np.sin(np.pi*w[:, 0]))**2
     term3 = (w[:, d-1] - 1)**2 * (1 + (np.sin(2 * np.pi * xx[: , d-1]))**2)

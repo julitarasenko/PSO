@@ -30,11 +30,11 @@ for i in range(np.size(param_problem['name'])):
     print(problem, dim, domain)
     HalvingSHA(random_gen, problem, dim, domain)
 
-
+n = 10
 param_ftest = {
     'name' : [spheref, zakharov, rosenbrock, modified_rosenbrock, easom, ackley, griewank, alpine, perm, schwefel, yang3, yang4, csendes, yang2, levy],
     'dim' : [inf, inf, inf, 4, 2, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf],
-    'domain' : [[0, 10], [-5, 5], [-5, 10], [0, 1], [-100, 100], [-35, 35], [-100, 100], [-10, 10], [-dim, dim], [-500, 500], [-2*pi, 2*pi], [-20, 20], [-1, 1], [-5, 5], [-10, 10]],
+    'domain' : [[0, 10], [-5, 5], [-5, 10], [0, 1], [-100, 100], [-35, 35], [-100, 100], [-10, 10], [-n, n], [-500, 500], [-2*pi, 2*pi], [-20, 20], [-1, 1], [-5, 5], [-10, 10]],
     'min' : [0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0]
 }
 
@@ -42,7 +42,7 @@ for i in range(np.size(param_ftest['name'])):
     ftest = param_ftest['name'][i]
     dim = param_ftest['dim'][i]
     if dim == inf:
-        dim = 10
+        dim = n
     domain = param_ftest['domain'][i]
     print(ftest, dim, domain)
     HalvingSHA(random_gen, ftest, dim, domain)
