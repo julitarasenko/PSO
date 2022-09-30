@@ -5,8 +5,12 @@ import numpy as np
 import scipy.stats as ss
 from pso import pso
 from pso_domain import pso_domain 
+import time
 
 def HalvingSHA(generator_set, problem, dim, domain, max_iter):
+    
+    f = open('data.csv', 'a')
+
     #minimum resources
     r = 1
 
@@ -44,10 +48,22 @@ def HalvingSHA(generator_set, problem, dim, domain, max_iter):
             # print("Swarm Size:", swarm_size)
             # print("Problem:", problem, dim, domain)
             # print("Setup:", setup[j])
+
+            start = time.time()
+            
             if len(domain) == np.size(domain):
                 X, results = pso(dim, swarm_size, domain, setup[j], problem, max_iter)
             else:
                 X, results = pso_domain(dim, swarm_size, domain, setup[j], problem, max_iter)
+
+            finish = time.time()
+            t = finish - start 
+            gBest_fit = results[len(results) - 1][1]
+            f.write(str(problem).partition(' ')[2].partition(' ')[0] + ';' + str(t) + ';' + str(gBest_fit))
+            f.write('\n')   
+
+    f.close()
+    s
     return X, results
 
     # if gen_len == 3:
@@ -59,3 +75,4 @@ def HalvingSHA(generator_set, problem, dim, domain, max_iter):
 
 # (ss.arcsine.rvs) = 0<x <1, dla omega and phi
 # (ss.alpha.rvs) x>0, a>0 a=2 dla phi
+
