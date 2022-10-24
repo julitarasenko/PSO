@@ -13,7 +13,7 @@
 """
 import numpy as np
 
-def pso(d, swarm_size, domain, sets, test, max_iter): # Hyper-parameter of the algorithm
+def pso(d, swarm_size, domain, sets, test, max_iter): # Hyper-parameters of the algorithm
     # Get all sets
     # If test the touple length and based on this the random function param are set up
 
@@ -64,14 +64,15 @@ def pso(d, swarm_size, domain, sets, test, max_iter): # Hyper-parameter of the a
 
         # position outside the domain - correct moving to the domain edge
         if ( any(X[(X < domain[0]) | (X > domain[1])])):
+            x_corr += len(X[(X < domain[0]) | (X > domain[1])])
             X[X < domain[0]] = domain[0]
             X[X > domain[1]] = domain[1]
-            x_corr += len(X[(X < domain[0]) | (X > domain[1])])
+
         # max_vel control
         if( any(V[(V < -V_max) | (V > V_max)])):
+            v_corr += len(V[(V < -V_max) | (V > V_max)])
             V[V < -V_max] = -V_max
             V[V > V_max] = V_max
-            v_corr += len(V[(V < -V_max) | (V > V_max)])
 
         # personal best setup
         fit = test(X)
@@ -82,5 +83,7 @@ def pso(d, swarm_size, domain, sets, test, max_iter): # Hyper-parameter of the a
         gBest = pBest[pBest_fit.argmin()]
         gBest_fit = pBest_fit.min()
 
-        results.append([gBest, gBest_fit, np.average(fit), x_corr, v_corr])
-    return X, results
+        results.append([j, gBest_fit, np.average(fit), x_corr, v_corr])
+    return [results[-1][1], np.array(results).mean(axis=0)[2],
+            np.array(results).std(axis=0)[2], np.array(results).mean(axis=0)[3],
+            np.array(results).mean(axis=0)[4] ] # X, results

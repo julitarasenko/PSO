@@ -68,16 +68,16 @@ def pso_domain(d, swarm_size, domain, sets, test, max_iter): # Hyper-parameter o
         for i in range(d):
             X_ = X[:, i]
             if ( any(X_[(X_ < domain[i][0]) | (X_ > domain[i][1])])):
+                x_corr += len(X_[(X_ < domain[i][0]) | (X_ > domain[i][1])])
                 X_[X_ < domain[i][0]] = domain[i][0]
                 X_[X_ > domain[i][1]] = domain[i][1]
-                x_corr += len(X_[(X_ < domain[i][0]) | (X_ > domain[i][1])])
             X[:, i] = X_
 
         # max_vel control
         if( any(V[(V < -V_max) | (V > V_max)])):
+            v_corr += len(V[(V < -V_max) | (V > V_max)])
             V[V < -V_max] = -V_max
             V[V > V_max] = V_max
-            v_corr += len(V[(V < -V_max) | (V > V_max)])
 
         # personal best setup
         fit = test(X)
@@ -88,5 +88,7 @@ def pso_domain(d, swarm_size, domain, sets, test, max_iter): # Hyper-parameter o
         gBest = pBest[pBest_fit.argmin()]
         gBest_fit = pBest_fit.min()
 
-        results.append([gBest, gBest_fit, np.average(fit), x_corr, v_corr])
-    return X, results
+        results.append([j, gBest_fit, np.average(fit), x_corr, v_corr])
+    return [results[-1][1], np.array(results).mean(axis=0)[2],
+            np.array(results).std(axis=0)[2], np.array(results).mean(axis=0)[3],
+            np.array(results).mean(axis=0)[4]]  # X, results
