@@ -1,6 +1,7 @@
 import math
-
 import numpy as np
+import time
+from joblib import Parallel, delayed
 from scipy import stats as ss
 from cmath import inf, pi
 from problem1 import problem1
@@ -39,17 +40,21 @@ param_problem = {
     'min': [0, -600, -600, -600, 0]
 }
 
-n = 20
-for i in range(np.size(param_problem['name'])):
+def problem(i):
     problem = param_problem['name'][i]
     dim = param_problem['dim'][i]
     domain = param_problem['domain'][i]
-    print(problem, dim, domain)
+    # print(problem, dim, domain)
     exp_min = param_problem['min'][i]
-    print(problem, dim, domain)
+    # print(problem, dim, domain)
     HalvingSHA(random_gen, problem, dim, domain, exp_min)
 
-    
+start = time.time()
+Parallel(n_jobs=1)(delayed(problem)(i) for i in range(np.size(param_problem['name'])))
+end = time.time()
+print('{:.4f} s'.format(end-start))
+
+n = 20
 
 param_ftest = {
     'name': [spheref, zakharov, rosenbrock, trid6, easom, ackley, griewank, alpine, perm, schwefel, yang3,
@@ -63,11 +68,16 @@ param_ftest = {
     'min': [0, 0, 0, -50, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0]
 }
 
-for i in range(np.size(param_ftest['name'])):
+def test(i):
     ftest = param_ftest['name'][i]
     dim = param_ftest['dim'][i]
     domain = param_ftest['domain'][i]
     exp_min = param_ftest['min'][i]
-    print(ftest, dim, domain)
+    # print(ftest, dim, domain)
     HalvingSHA(random_gen, ftest, dim, domain, exp_min)
+
+start = time.time()
+Parallel(n_jobs=2)(delayed(test)(i) for i in range(np.size(param_ftest['name'])))
+end = time.time()
+print('{:.4f} s'.format(end-start))
 

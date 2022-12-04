@@ -8,7 +8,6 @@ def problem6(x):
     #     print("x passed to this function must be n dimentional array where, n is perfectly divisible by 3.")
     NP = d//3
     x_ = x.reshape(d1, NP, 3)
-    param5 = [3.0, 0.2, 3.2647e+3, 9.5373e+1, 3.2394, 1.3258, 1.3258, 4.8381, 2.0417, 22.956, 0.33675, 0]
     param6 = [2.85, 0.15, 1.8308e+3, 4.7118e+2, 2.4799, 1.7322, 1.7322, 1.0039e+05, 1.6218e+01, 7.8734e-01, 1.0999e-06, -5.9826e-01]
     f = problem_f(x_, param6)
     # if math.remainder(p,3) != 0:

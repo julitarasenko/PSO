@@ -1,5 +1,5 @@
-import math
 import numpy as np
+from joblib import Parallel, delayed
 
 def problem_f(x, param):
     s, n, dim = x.shape
@@ -13,10 +13,8 @@ def problem_f(x, param):
     h = param[11]
     E = np.zeros((s,n))
     r = np.zeros((s,n,n))
-
-    for i in range(n):
-        for j in range(n):
-            r[:, i, j] = np.sqrt(np.sum((x[:, i, :] - x[:, j, :]) ** 2, axis=1)/3)
+    
+    Parallel(n_jobs=1)(delayed(loop1)(i, j, r, x) for i in range(n) for j in range(n))
 
     fcr = 0.5 - 0.5 * np.sin(np.pi/2 * (r - R1) / R2)
     if any(r[r <= (R1 - R2)]):
@@ -28,30 +26,32 @@ def problem_f(x, param):
     VAr = B * np.exp(-lemda2 * r)
 
     jeta = np.zeros((s, n, n))
-    for i in range(n):
-        for j in range(n):
-            if i == j:
-                continue
-            for k in range(n):
-                if i == k or j == k:
-                    continue
-                rd1 = r[:, i, k]
-                rd3 = r[:, k, j]
-                rd2 = r[:, i, j]
-                ctheta_ijk = (rd1 ** 2 + rd2 ** 2 - rd3 ** 2) / (2 * rd1 * rd2)
-                G_th_ijk = 1 + (c ** 2) / (d ** 2) - (c ** 2) / (d ** 2 + (h - ctheta_ijk) ** 2)
-                # print("Exp", lemda3 ** 3 * (rd2 - rd1) ** 3)
-                jeta[:, i, j] += fcr[:, i, k] * G_th_ijk * np.exp(lemda3 ** 3 * (rd2 - rd1) ** 3)
 
-            Bij = (1 + ((gama * jeta[:, i, j]) ** n1)) ** (-0.5/n1) # (-1/2*n1)
-            E[:, i] += fcr[:, i, j] * (VRr[:, i, j] - Bij * VAr[:, i, j])/2
+    Parallel(n_jobs=2)(delayed(loop2)(i, j, n, r, c, d, h, jeta, fcr, lemda3, gama, n1, E, VRr, VAr) for i in range(n) for j in range(n))
+    
     return np.sum(E, axis=1)
 
+def loop1(i, j, r, x):
+    r[:, i, j] = np.sqrt(np.sum((x[:, i, :] - x[:, j, :]) ** 2, axis=1)/3)
+
+def loop2(i, j, n, r, c, d, h, jeta, fcr, lemda3, gama, n1, E, VRr, VAr):
+    if i != j:
+        for k in range(n):
+            if i == k or j == k:
+                continue
+            rd1 = r[:, i, k]
+            rd3 = r[:, k, j]
+            rd2 = r[:, i, j]
+            ctheta_ijk = (rd1 ** 2 + rd2 ** 2 - rd3 ** 2) / (2 * rd1 * rd2)
+            G_th_ijk = 1 + (c ** 2) / (d ** 2) - (c ** 2) / (d ** 2 + (h - ctheta_ijk) ** 2)
+            # print("Exp", lemda3 ** 3 * (rd2 - rd1) ** 3)
+            jeta[:, i, j] += fcr[:, i, k] * G_th_ijk * np.exp(lemda3 ** 3 * (rd2 - rd1) ** 3)
+
+        Bij = (1 + ((gama * jeta[:, i, j]) ** n1)) ** (-0.5/n1) # (-1/2*n1)
+        E[:, i] += fcr[:, i, j] * (VRr[:, i, j] - Bij * VAr[:, i, j])/2
 
 def problem5(x):
     d1, d = x.shape
-    # if d1%3 != 0:
-    #     print("x passed to this function must be n dimentional array where, n is perfectly divisible by 3.")
     NP = d//3
     x_ = x.reshape(d1, NP, 3)
     param5 = [3.0, 0.2, 3.2647e+3, 9.5373e+1, 3.2394, 1.3258, 1.3258, 4.8381, 2.0417, 22.956, 0.33675, 0]
