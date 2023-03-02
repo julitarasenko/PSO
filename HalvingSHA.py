@@ -1,8 +1,6 @@
-from cmath import pi
 import pandas as pd
 import math
 import numpy as np
-import scipy.stats as ss
 from pso import pso
 from pso_domain import pso_domain 
 import time
@@ -14,13 +12,12 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, ex_min):
     r = 2
 
     # maximum resources
-    R = 20
+    R = len(generator_set['swarm']) * len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])
     base = 2
 
-    sMax = math.floor(math.log(R/r, base))
+    sMax = math.ceil(math.log(R/r, base))
     s = 0
 
-    n = len(generator_set['swarm']) * len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])
 
     # Generating table of setups from all combinations, where the list contains
     # 0 - swarm
@@ -41,9 +38,9 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, ex_min):
     df_result.to_csv(f"result-{str(problem).split(' ')[1]}.csv", index=False)
 
     # The halving algorithm
-    index = list(range(n))
+    index = list(range(R))
     for i in range(0,(sMax-s)):
-        ni = math.floor(n*math.pow(2, -i)) #number of setups for the iteration
+        ni = math.floor(R*math.pow(2, -i)) #number of setups for the iteration
         ri = r * math.pow(2, (i+s)) #number of resources in the iteration or swarm size?
 
         Parallel(n_jobs=1)(delayed(parallel_pso)(j, ri, domain, dim, setup, qmc_interval, problem, df_result) for j in index[:ni])
@@ -60,23 +57,60 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, ex_min):
                                           "MeanXCorr", "MeanVCorr", "Time"])
 
 
-def parallel_pso(j, ri, domain, dim, setup, qmc_interval, problem, df_result):
-    max_iter = int(ri*5) # might be connected with the algorithm as the resource
-    swarm_size = int(ri*5) # might be connected with the algorithm as the resource
-   
+def parallel_pso(j, ri, domain, d, setup, qmc_interval, problem, df_result):
+    max_iter = int(ri*2) # might be connected with the algorithm as the resource
+    swarm_size = int(ri*2) # might be connected with the algorithm as the resource
+    iteration = int(ri*2)
+
+    sets = setup[j]
+
+    if len(sets[1]) == 1:
+        w = sets[1][0](size=1)
+    else:
+        w = sets[1][0](sets[1][1],size=1)
+    # Personal influence factor
+    if len(sets[2]) == 1:
+        phi_p = sets[2][0](size=d)
+    else:
+        phi_p = sets[2][0](sets[2][1],size=d)
+    # Global influence factor
+    if len(sets[3]) == 1:
+        phi_g = sets[3][0](size=d)
+    else:
+        phi_g = sets[3][0](sets[3][1], size=d)
+
+    # # Create particles inside the range
+    if (len(sets[0]) == 1 and (j < qmc_interval[0] or j > qmc_interval[1])):
+        X_ = sets[0][0](size=(swarm_size, d))
+    else:
+        X_ = sets[0][0](d=d).random(n=swarm_size)
+
     start = time.time()
     
-    if len(domain) == np.size(domain):
-        results = pso(dim, swarm_size, domain, setup[j], j, qmc_interval, problem, max_iter)
-    else:
-        results = pso_domain(dim, swarm_size, domain, setup[j], j, qmc_interval, problem, max_iter)
+    results = []
+    for i in range(iteration):
+        if len(domain) == np.size(domain):
+            result = pso(d, swarm_size, domain, w, phi_p, phi_g, X_, problem, max_iter)
+        else:
+            result = pso_domain(d, swarm_size, domain, w, phi_p, phi_g, X_, problem, max_iter)
+        results.append(result)
 
     finish = time.time()
-    t = (finish - start)
-    df_result.loc[len(df_result)] = [j, str(setup[j][0]).partition('_distns.')[2].partition(' object')[0],
-            str(setup[j][1]).partition('_distns.')[2].partition(' object')[0],
-            str(setup[j][2]).partition('_distns.')[2].partition(' object')[0],
-            str(setup[j][3]).partition('_distns.')[2].partition(' object')[0],
-            swarm_size]+ results + [t]
+    t = (finish - start)/iteration
+
+    result_mean = list(np.mean(results, axis=0))
+
+    if (j < qmc_interval[0] or j > qmc_interval[1]):
+        df_result.loc[len(df_result)] = [j, str(setup[j][0]).partition('_distns.')[2].partition(' object')[0],
+                    str(setup[j][1]).partition('_distns.')[2].partition(' object')[0],
+                    str(setup[j][2]).partition('_distns.')[2].partition(' object')[0],
+                    str(setup[j][3]).partition('_distns.')[2].partition(' object')[0],
+                    swarm_size]+ result_mean + [t]
+    else:
+        df_result.loc[len(df_result)] = [j, str(setup[j][0]).partition('qmc.')[2].partition("'")[0],
+                    str(setup[j][1]).partition('_distns.')[2].partition(' object')[0],
+                    str(setup[j][2]).partition('_distns.')[2].partition(' object')[0],
+                    str(setup[j][3]).partition('_distns.')[2].partition(' object')[0],
+                    swarm_size]+ result_mean + [t]
 
 

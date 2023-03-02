@@ -13,32 +13,8 @@
 """
 import numpy as np
 
-def pso_domain(d, swarm_size, domain, sets, sets_j, qmc_interval, test, max_iter): # Hyper-parameter of the algorithm
-    # Get all sets
-    # If test the touple length and based on this the random function param are set up
-
-    # print("d, swarm_size, domain, sets, test: ", d, swarm_size, domain, sets, test)
-    # Omega
-    if len(sets[1]) == 1:
-        w = sets[1][0](size=1)
-    else:
-        w = sets[1][0](sets[1][1],size=1)
-    # Personal influence factor
-    if len(sets[2]) == 1:
-        phi_p = sets[2][0](size=d)
-    else:
-        phi_p = sets[2][0](sets[2][1],size=d)
-    # Global influence factor
-    if len(sets[3]) == 1:
-        phi_g = sets[3][0](size=d)
-    else:
-        phi_g = sets[3][0](sets[3][1], size=d)
-
-    # # Create particles inside the range
-    if (len(sets[0]) == 1 and (sets_j < qmc_interval[0] or sets_j > qmc_interval[1])):
-        X_ = sets[0][0](size=(swarm_size, d))
-    else:
-        X_ = sets[0][0](d=d).random(n=swarm_size)
+def pso_domain(d, swarm_size, domain, w, phi_p, phi_g, X_, test, max_iter): # Hyper-parameter of the algorithm
+    
     # Transformation to a given domain
     old_min, old_max = X_.min(), X_.max()
     X = np.zeros((swarm_size, d))
