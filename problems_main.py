@@ -13,16 +13,34 @@ from HalvingSHA import HalvingSHA
 from plots import spheref, zakharov, rosenbrock, trid6, easom, ackley, griewank, alpine, perm, schwefel, \
     yang3, yang4, csendes, yang2, levy8
 
+generator_set = {  
+            'swarm': [(ss.norm.rvs,), 
+                        (ss.uniform.rvs,), 
+                        (ss.qmc.Sobol,), #start library scipy.stats.qmc in index 2
+                        (ss.qmc.Halton,), 
+                        (ss.qmc.LatinHypercube,), #end ibrary scipy.stats.qmc in index 4
+                        # (ss.qmc.PoissonDisk(d=dim),), 
+                        (ss.levy.rvs,)],
 
-n=5
-random_gen = {'swarm': [(ss.norm.rvs,), (ss.uniform.rvs,)],
-        # (ss.f.rvs, 29, 18), (ss.levy.rvs, 10, 2),],
-        'omega': [(ss.arcsine.rvs,),(ss.norm.rvs,), (ss.uniform.rvs,)],
-        # (ss.f.rvs, 29, 18), (ss.levy.rvs, 10, 2),],
-        'phi_p': [(ss.alpha.rvs, 2), (ss.arcsine.rvs,), (ss.uniform.rvs,)],
-        'phi_g': [(ss.arcsine.rvs,), (ss.uniform.rvs,)]
+            'omega': [(ss.arcsine.rvs,),
+                        (ss.norm.rvs,), 
+                        (ss.uniform.rvs,)],
+
+            'phi_p': [(ss.alpha.rvs, 2), 
+                        (ss.arcsine.rvs,), 
+                        (ss.uniform.rvs,)],
+
+            'phi_g': [(ss.arcsine.rvs,), 
+                        (ss.uniform.rvs,)]
         }
 
+qmc_start_index = 2
+qmc_end_index = 4
+
+qmc_interval = [len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])*qmc_start_index,
+                len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])*(qmc_end_index+1)-1]
+
+n=5
 param_problem = {
     'name' : [problem1, problem2, problem5, problem6, problem7],
     'dim': [20, 6, 3*n, 3*n, 3*n, 20],
@@ -44,10 +62,8 @@ def problem(i):
     problem = param_problem['name'][i]
     dim = param_problem['dim'][i]
     domain = param_problem['domain'][i]
-    # print(problem, dim, domain)
     exp_min = param_problem['min'][i]
-    # print(problem, dim, domain)
-    HalvingSHA(random_gen, problem, dim, domain, exp_min)
+    HalvingSHA(generator_set, qmc_interval, problem, dim, domain, exp_min)
 
 start = time.time()
 Parallel(n_jobs=1)(delayed(problem)(i) for i in range(np.size(param_problem['name'])))
@@ -73,8 +89,7 @@ def test(i):
     dim = param_ftest['dim'][i]
     domain = param_ftest['domain'][i]
     exp_min = param_ftest['min'][i]
-    # print(ftest, dim, domain)
-    HalvingSHA(random_gen, ftest, dim, domain, exp_min)
+    HalvingSHA(generator_set, qmc_interval, ftest, dim, domain, exp_min)
 
 start = time.time()
 Parallel(n_jobs=2)(delayed(test)(i) for i in range(np.size(param_ftest['name'])))

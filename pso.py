@@ -13,7 +13,7 @@
 """
 import numpy as np
 
-def pso(d, swarm_size, domain, sets, test, max_iter): # Hyper-parameters of the algorithm
+def pso(d, swarm_size, domain, sets, sets_j, qmc_interval, test, max_iter): # Hyper-parameters of the algorithm
     # Get all sets
     # If test the touple length and based on this the random function param are set up
 
@@ -35,13 +35,21 @@ def pso(d, swarm_size, domain, sets, test, max_iter): # Hyper-parameters of the 
         phi_g = sets[3][0](sets[3][1], size=d)
 
     # # Create particles inside the range
-    if len(sets[0]) == 1:
+    if (len(sets[0]) == 1 and (sets_j < qmc_interval[0] or sets_j > qmc_interval[1])):
         X_ = sets[0][0](size=(swarm_size, d))
     else:
-        X_ = sets[0][0](sets[0][1], size=(swarm_size, d))
+        X_ = sets[0][0](d=d).random(n=swarm_size)
     # Transformation to a given domain
     old_min, old_max = X_.min(), X_.max()
     X = ((X_ - old_min) / (old_max - old_min)) * (domain[1] - domain[0]) + domain[0]
+    corr=0
+    for i in range(d):
+        for j in range(swarm_size):
+            if (X[j, i] > domain[1]  or X[j, i] < domain[0]):
+                print("swarm, min, max: ", X[j, i], domain[0], domain[1] )
+                corr+=1
+    if (corr==0):
+        print("Swarm jest w prawidłowych przedziałach")
     # Initial velocity
     # V = np.zeros((swarm_size, d)) # zero
     V_max = 1/3 * abs(domain[1] - domain[0])
