@@ -32,9 +32,9 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, ex_min):
                     setup.append([i1, i2, i3, i4])
 
     df_result = pd.DataFrame(columns=["setIdx", "Swarm", "Omega", "phiP", "phiG",
-                                      "SwarSize", "BestFit", "avgSwarm",
-                                      "stdSwarm",
-                                      "MeanXCorr", "MeanVCorr", "Time"])
+                                          "SwarSize", "MaxIter", "Iteration", 
+                                          "BestFit", "avgSwarm", "stdSwarm",
+                                          "MeanXCorr", "MeanVCorr", "Time"])
     df_result.to_csv(f"result-{str(problem).split(' ')[1]}.csv", index=False)
 
     # The halving algorithm
@@ -52,8 +52,8 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, ex_min):
         df_result.sort_values(by='BestRank', ascending=False, inplace=True)
         index = df_result['setIdx'].values
         df_result = pd.DataFrame(columns=["setIdx", "Swarm", "Omega", "phiP", "phiG",
-                                          "SwarSize", "BestFit", "avgSwarm",
-                                          "stdSwarm",
+                                          "SwarSize", "MaxIter", "Iteration", 
+                                          "BestFit", "avgSwarm", "stdSwarm",
                                           "MeanXCorr", "MeanVCorr", "Time"])
 
 
@@ -105,12 +105,12 @@ def parallel_pso(j, ri, domain, d, setup, qmc_interval, problem, df_result):
                     str(setup[j][1]).partition('_distns.')[2].partition(' object')[0],
                     str(setup[j][2]).partition('_distns.')[2].partition(' object')[0],
                     str(setup[j][3]).partition('_distns.')[2].partition(' object')[0],
-                    swarm_size]+ result_mean + [t]
+                    swarm_size, max_iter, iteration]+ result_mean + [t]
     else:
         df_result.loc[len(df_result)] = [j, str(setup[j][0]).partition('qmc.')[2].partition("'")[0],
                     str(setup[j][1]).partition('_distns.')[2].partition(' object')[0],
                     str(setup[j][2]).partition('_distns.')[2].partition(' object')[0],
                     str(setup[j][3]).partition('_distns.')[2].partition(' object')[0],
-                    swarm_size]+ result_mean + [t]
+                    swarm_size, max_iter, iteration]+ result_mean + [t]
 
 
