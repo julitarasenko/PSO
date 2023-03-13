@@ -47,7 +47,7 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, ex_min):
 
         Parallel(n_jobs=1)(delayed(parallel_pso)(j, ri, domain, dim, setup, qmc_interval, problem, df_result) for j in index[:ni])
         
-        df_result["Criteria"] = df_result['BestFit'] - ex_min - df_result['MeanXCorr'] - df_result['MeanVCorr']
+        df_result["Criteria"] = df_result['BestFit'] - ex_min + df_result['MeanXCorr'] + df_result['MeanVCorr']
         df_result['BestRank'] = df_result['Criteria'].rank(ascending=False, pct=True)
         df_result.to_csv(f"result-{str(problem).split(' ')[1]}.csv", mode='a', header=False, index=False)
         # Sort by rank and store in index vector
@@ -61,7 +61,7 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, ex_min):
 def parallel_pso(j, ri, domain, dim, setup, qmc_interval, problem, df_result):
     max_iter = int(ri*2) # might be connected with the algorithm as the resource
     swarm_size = int(ri*2) # might be connected with the algorithm as the resource
-   
+
     start = time.time()
     
     if len(domain) == np.size(domain):
@@ -71,18 +71,18 @@ def parallel_pso(j, ri, domain, dim, setup, qmc_interval, problem, df_result):
 
     finish = time.time()
     t = (finish - start)
-    print(len(df_result))
+
     if (j < qmc_interval[0] or j > qmc_interval[1]):
-        df_result.loc[len(df_result)] = [j, str(setup[j][0]).partition('_distns.')[2].partition(' object')[0],
-                    str(setup[j][1]).partition('_distns.')[2].partition(' object')[0],
-                    str(setup[j][2]).partition('_distns.')[2].partition(' object')[0],
-                    str(setup[j][3]).partition('_distns.')[2].partition(' object')[0],
-                    swarm_size, max_iter]+ results + [t]
+        decomposition_swarm = str(setup[j][0]).partition('_distns.')[2].partition(' object')[0]
     else:
-        df_result.loc[len(df_result)] = [j, str(setup[j][0]).partition('qmc.')[2].partition("'")[0],
-                    str(setup[j][1]).partition('_distns.')[2].partition(' object')[0],
-                    str(setup[j][2]).partition('_distns.')[2].partition(' object')[0],
-                    str(setup[j][3]).partition('_distns.')[2].partition(' object')[0],
-                    swarm_size, max_iter]+ results + [t]
+        decomposition_swarm = str(setup[j][0]).partition('qmc.')[2].partition("'")[0]
+
+    decomposition_w = str(setup[j][1]).partition('_distns.')[2].partition(' object')[0]
+    decomposition_phi_p = str(setup[j][2]).partition('_distns.')[2].partition(' object')[0]
+    decomposition_phi_g = str(setup[j][3]).partition('_distns.')[2].partition(' object')[0]
+
+    df_result.loc[len(df_result)] = [j, decomposition_swarm, decomposition_w,
+                                     decomposition_phi_p, decomposition_phi_g,
+                                     swarm_size, max_iter]+ results + [t]
 
 

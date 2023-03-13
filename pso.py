@@ -19,20 +19,42 @@ def pso(d, swarm_size, domain, sets, sets_j, qmc_interval, test, max_iter): # Hy
 
     # print("d, swarm_size, domain, sets, test: ", d, swarm_size, domain, sets, test)
     # Omega
+    loc, scale = 0, 1
+
     if len(sets[1]) == 1:
-        w = sets[1][0](size=1)
+        w = sets[1][0](loc=loc, scale=scale, size=1)
+    elif len(sets[1]) == 2:
+        w = sets[1][0](sets[1][1], loc=loc, scale=scale, size=1)
+    elif len(sets[1]) == 3:
+        w = sets[1][0](sets[1][1], sets[1][2], loc=loc, scale=scale, size=1)
+    elif len(sets[1]) == 4:
+        w = sets[1][0](sets[1][1], sets[1][2], sets[1][3], loc=loc, scale=scale, size=1)
     else:
-        w = sets[1][0](sets[1][1],size=1)
+        w = sets[1][0](sets[1][1], sets[1][2], sets[1][3], sets[1][4], loc=loc, scale=scale, size=1)
+
     # Personal influence factor
     if len(sets[2]) == 1:
-        phi_p = sets[2][0](size=d)
+        phi_p = sets[2][0](loc=loc, scale=scale, size=d)
+    elif len(sets[2]) == 2:
+        phi_p = sets[2][0](sets[2][1], loc=loc, scale=scale, size=d)
+    elif len(sets[2]) == 3:
+        phi_p = sets[2][0](sets[2][1], sets[2][2], loc=loc, scale=scale, size=d)
+    elif len(sets[2]) == 4:
+        phi_p = sets[2][0](sets[2][1], sets[2][2], sets[2][3], loc=loc, scale=scale, size=d)
     else:
-        phi_p = sets[2][0](sets[2][1],size=d)
+        phi_p = sets[2][0](sets[2][1], sets[2][2], sets[2][3], sets[2][4], loc=loc, scale=scale, size=d)
+
     # Global influence factor
     if len(sets[3]) == 1:
-        phi_g = sets[3][0](size=d)
+        phi_g = sets[3][0](loc=loc, scale=scale, size=d)
+    elif len(sets[3]) == 2:
+        phi_g = sets[3][0](sets[3][1], loc=loc, scale=scale, size=d)
+    elif len(sets[3]) == 3:
+        phi_g = sets[3][0](sets[3][1], sets[3][2], loc=loc, scale=scale, size=d)
+    elif len(sets[3]) == 4:
+        phi_g = sets[3][0](sets[3][1], sets[3][2], sets[3][3], loc=loc, scale=scale, size=d)
     else:
-        phi_g = sets[3][0](sets[3][1], size=d)
+        phi_g = sets[3][0](sets[3][1], sets[3][2], sets[3][3], sets[3][4], loc=loc, scale=scale, size=d)
 
     # # Create particles inside the range
     if (len(sets[0]) == 1 and (sets_j < qmc_interval[0] or sets_j > qmc_interval[1])):
