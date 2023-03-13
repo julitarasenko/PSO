@@ -64,20 +64,42 @@ def parallel_pso(j, ri, domain, d, setup, qmc_interval, problem, df_result):
 
     sets = setup[j]
 
+    loc, scale = 0, 1
+
     if len(sets[1]) == 1:
-        w = sets[1][0](size=1)
+        w = sets[1][0](loc=loc, scale=scale, size=1)
+    elif len(sets[1]) == 2:
+        w = sets[1][0](sets[1][1], loc=loc, scale=scale, size=1)
+    elif len(sets[1]) == 3:
+        w = sets[1][0](sets[1][1], sets[1][2], loc=loc, scale=scale, size=1)
+    elif len(sets[1]) == 4:
+        w = sets[1][0](sets[1][1], sets[1][2], sets[1][3], loc=loc, scale=scale, size=1)
     else:
-        w = sets[1][0](sets[1][1],size=1)
+        w = sets[1][0](sets[1][1], sets[1][2], sets[1][3], sets[1][4], loc=loc, scale=scale, size=1)
+
     # Personal influence factor
     if len(sets[2]) == 1:
-        phi_p = sets[2][0](size=d)
+        phi_p = sets[2][0](loc=loc, scale=scale, size=d)
+    elif len(sets[2]) == 2:
+        phi_p = sets[2][0](sets[2][1], loc=loc, scale=scale, size=d)
+    elif len(sets[2]) == 3:
+        phi_p = sets[2][0](sets[2][1], sets[2][2], loc=loc, scale=scale, size=d)
+    elif len(sets[2]) == 4:
+        phi_p = sets[2][0](sets[2][1], sets[2][2], sets[2][3], loc=loc, scale=scale, size=d)
     else:
-        phi_p = sets[2][0](sets[2][1],size=d)
+        phi_p = sets[2][0](sets[2][1], sets[2][2], sets[2][3], sets[2][4], loc=loc, scale=scale, size=d)
+
     # Global influence factor
     if len(sets[3]) == 1:
-        phi_g = sets[3][0](size=d)
+        phi_g = sets[3][0](loc=loc, scale=scale, size=d)
+    elif len(sets[3]) == 2:
+        phi_g = sets[3][0](sets[3][1], loc=loc, scale=scale, size=d)
+    elif len(sets[3]) == 3:
+        phi_g = sets[3][0](sets[3][1], sets[3][2], loc=loc, scale=scale, size=d)
+    elif len(sets[3]) == 4:
+        phi_g = sets[3][0](sets[3][1], sets[3][2], sets[3][3], loc=loc, scale=scale, size=d)
     else:
-        phi_g = sets[3][0](sets[3][1], size=d)
+        phi_g = sets[3][0](sets[3][1], sets[3][2], sets[3][3], sets[3][4], loc=loc, scale=scale, size=d)
 
     # # Create particles inside the range
     if (len(sets[0]) == 1 and (j < qmc_interval[0] or j > qmc_interval[1])):
@@ -101,16 +123,15 @@ def parallel_pso(j, ri, domain, d, setup, qmc_interval, problem, df_result):
     result_mean = list(np.mean(results, axis=0))
 
     if (j < qmc_interval[0] or j > qmc_interval[1]):
-        df_result.loc[len(df_result)] = [j, str(setup[j][0]).partition('_distns.')[2].partition(' object')[0],
-                    str(setup[j][1]).partition('_distns.')[2].partition(' object')[0],
-                    str(setup[j][2]).partition('_distns.')[2].partition(' object')[0],
-                    str(setup[j][3]).partition('_distns.')[2].partition(' object')[0],
-                    swarm_size, max_iter, iteration]+ result_mean + [t]
+        decomposition_swarm = str(setup[j][0]).partition('_distns.')[2].partition(' object')[0]
     else:
-        df_result.loc[len(df_result)] = [j, str(setup[j][0]).partition('qmc.')[2].partition("'")[0],
-                    str(setup[j][1]).partition('_distns.')[2].partition(' object')[0],
-                    str(setup[j][2]).partition('_distns.')[2].partition(' object')[0],
-                    str(setup[j][3]).partition('_distns.')[2].partition(' object')[0],
-                    swarm_size, max_iter, iteration]+ result_mean + [t]
+        decomposition_swarm = str(setup[j][0]).partition('qmc.')[2].partition("'")[0]
 
+    decomposition_w = str(setup[j][1]).partition('_distns.')[2].partition(' object')[0]
+    decomposition_phi_p = str(setup[j][2]).partition('_distns.')[2].partition(' object')[0]
+    decomposition_phi_g = str(setup[j][3]).partition('_distns.')[2].partition(' object')[0]
+
+    df_result.loc[len(df_result)] = [j, decomposition_swarm, decomposition_w,
+                                     decomposition_phi_p, decomposition_phi_g,
+                                     swarm_size, max_iter, iteration] + result_mean + [t]
 
