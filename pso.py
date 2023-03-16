@@ -64,14 +64,7 @@ def pso(d, swarm_size, domain, sets, sets_j, qmc_interval, test, max_iter): # Hy
     # Transformation to a given domain
     old_min, old_max = X_.min(), X_.max()
     X = ((X_ - old_min) / (old_max - old_min)) * (domain[1] - domain[0]) + domain[0]
-    corr=0
-    for i in range(d):
-        for j in range(swarm_size):
-            if (X[j, i] > domain[1]  or X[j, i] < domain[0]):
-                print("swarm, min, max: ", X[j, i], domain[0], domain[1] )
-                corr+=1
-    if (corr==0):
-        print("Swarm jest w prawidłowych przedziałach")
+    
     # Initial velocity
     # V = np.zeros((swarm_size, d)) # zero
     V_max = 1/3 * abs(domain[1] - domain[0])

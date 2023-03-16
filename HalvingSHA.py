@@ -15,6 +15,7 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, ex_min):
 
     # maximum resources
     R = len(generator_set['swarm']) * len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])
+    print("R: ", R)
     base = 2
 
     sMax = math.ceil(math.log(R/r, base))
@@ -37,7 +38,7 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, ex_min):
                                       "SwarmSize", "MaxIter", "BestFit", "avgSwarm",
                                       "stdSwarm",
                                       "MeanXCorr", "MeanVCorr", "Time",])
-    df_result.to_csv(f"result-{str(problem).split(' ')[1]}.csv", index=False)
+    df_result.to_csv(f"resultSHA-{str(problem).split(' ')[1]}.csv", index=False)
 
     # The halving algorithm
     index = list(range(R))
@@ -49,7 +50,6 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, ex_min):
         
         df_result["Criteria"] = df_result['BestFit'] - ex_min + df_result['MeanXCorr'] + df_result['MeanVCorr']
         df_result['BestRank'] = df_result['Criteria'].rank(ascending=False, pct=True)
-        df_result.to_csv(f"result-{str(problem).split(' ')[1]}.csv", mode='a', header=False, index=False)
         # Sort by rank and store in index vector
         df_result.sort_values(by='BestRank', ascending=False, inplace=True)
         index = df_result['setIdx'].values
@@ -59,8 +59,8 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, ex_min):
                                           "MeanXCorr", "MeanVCorr", "Time"])                                          
 
 def parallel_pso(j, ri, domain, dim, setup, qmc_interval, problem, df_result):
-    max_iter = int(ri*2) # might be connected with the algorithm as the resource
-    swarm_size = int(ri*2) # might be connected with the algorithm as the resource
+    max_iter = int(ri*100) # might be connected with the algorithm as the resource
+    swarm_size = int(ri*100) # might be connected with the algorithm as the resource
 
     start = time.time()
     
@@ -84,5 +84,12 @@ def parallel_pso(j, ri, domain, dim, setup, qmc_interval, problem, df_result):
     df_result.loc[len(df_result)] = [j, decomposition_swarm, decomposition_w,
                                      decomposition_phi_p, decomposition_phi_g,
                                      swarm_size, max_iter]+ results + [t]
+    df_new_row = pd.DataFrame([[j, decomposition_swarm, decomposition_w,
+                                decomposition_phi_p, decomposition_phi_g,
+                                swarm_size, max_iter]+ results + [t]], 
+                                columns=df_result.columns)
+    df_new_row.to_csv(f"resultSHA-{str(problem).split(' ')[1]}.csv", mode='a', header=False, index=False)  
+    
+    
 
 
