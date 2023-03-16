@@ -23,14 +23,7 @@ def pso_domain(d, swarm_size, domain, w, phi_p, phi_g, X_, test, max_iter): # Hy
         X[:, i] = ((X_[:, i] - old_min) / (old_max - old_min)) * (domain[i][1] - domain[i][0]) + domain[i][0]
         if (1/3 * abs(domain[i][1] - domain[i][0]) > V_max): 
             V_max = 1/3 * abs(domain[i][1] - domain[i][0])
-    corr=0
-    for i in range(d):
-        for j in range(swarm_size):
-            if (X[j, i] > domain[i][1]  or X[j, i] < domain[i][0]):
-                print("swarm, min, max: ", X[j, i], domain[i][0], domain[i][1] )
-                corr+=1
-    if (corr==0):
-        print("Swarm jest w prawidłowych przedziałach")    
+       
     V = np.random.randn(swarm_size, d) * V_max #lub losowe z rozkładu normalnego
 
     # Initial bests
