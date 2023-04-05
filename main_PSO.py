@@ -20,7 +20,7 @@ for i1 in generator_set['swarm']:
 n = len(generator_set['swarm']) * len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])
 
 def parallel_pso(j, domain, dim, setup, qmc_interval, problem, df_result):
-    max_iter = 100 # might be connected with the algorithm as the resource
+    max_iter = 1000 # might be connected with the algorithm as the resource
     swarm_size = 10 # might be connected with the algorithm as the resource
 
     start = time.time()
@@ -58,12 +58,12 @@ def test(i):
                                   "stdSwarm",
                                   "MeanXCorr", "MeanVCorr", "Time"])
     
-    df_result.to_csv(f"resultPSO-{str(problem).split(' ')[1]}.csv", index=False)
+    df_result.to_csv(f"resultPSO-{str(ftest).split(' ')[1]}.csv", index=False)
     
     Parallel(n_jobs=1)(delayed(parallel_pso)(j, domain, dim, setup, qmc_interval, ftest, df_result) for j in range(n))
 
 start = time.time()
-Parallel(n_jobs=2)(delayed(test)(i) for i in range(np.size(param_ftest['name'])))
+Parallel(n_jobs=1)(delayed(test)(i) for i in range(np.size(param_ftest['name'])))
 end = time.time()
 print('{:.4f} s'.format(end-start))
 
@@ -82,7 +82,7 @@ def problem(i):
     Parallel(n_jobs=1)(delayed(parallel_pso)(j, domain, dim, setup, qmc_interval, problem, df_result) for j in range(n))
                                         
 start = time.time()
-Parallel(n_jobs=1)(delayed(problem)(i) for i in range(np.size(param_problem['name'])))
+Parallel(n_jobs=2)(delayed(problem)(i) for i in range(np.size(param_problem['name'])))
 end = time.time()
 print('{:.4f} s'.format(end-start))
 
