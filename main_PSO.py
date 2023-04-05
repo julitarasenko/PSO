@@ -20,7 +20,7 @@ for i1 in generator_set['swarm']:
 n = len(generator_set['swarm']) * len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])
 
 def parallel_pso(j, domain, dim, setup, qmc_interval, problem, df_result):
-    max_iter = 1000 # might be connected with the algorithm as the resource
+    max_iter = 200 # might be connected with the algorithm as the resource
     swarm_size = 10 # might be connected with the algorithm as the resource
 
     start = time.time()
