@@ -48,6 +48,25 @@ def parallel_pso(j, domain, dim, setup, qmc_interval, problem, df_result):
                                 columns=df_result.columns)
     df_new_row.to_csv(f"resultPSO-{str(problem).split(' ')[1]}.csv", mode='a', header=False, index=False)  
 
+def test(i):
+    ftest = param_ftest['name'][i]
+    dim = param_ftest['dim'][i]
+    domain = param_ftest['domain'][i]
+
+    df_result = pd.DataFrame(columns=["setIdx", "Swarm", "Omega", "phiP", "phiG",
+                                  "SwarmSize", "MaxIter", "BestFit", "avgSwarm",
+                                  "stdSwarm",
+                                  "MeanXCorr", "MeanVCorr", "Time"])
+    
+    df_result.to_csv(f"resultPSO-{str(problem).split(' ')[1]}.csv", index=False)
+    
+    Parallel(n_jobs=1)(delayed(parallel_pso)(j, domain, dim, setup, qmc_interval, ftest, df_result) for j in range(n))
+
+start = time.time()
+Parallel(n_jobs=2)(delayed(test)(i) for i in range(np.size(param_ftest['name'])))
+end = time.time()
+print('{:.4f} s'.format(end-start))
+
 def problem(i):
     problem = param_problem['name'][i]
     dim = param_problem['dim'][i]
@@ -67,24 +86,7 @@ Parallel(n_jobs=1)(delayed(problem)(i) for i in range(np.size(param_problem['nam
 end = time.time()
 print('{:.4f} s'.format(end-start))
 
-def test(i):
-    ftest = param_ftest['name'][i]
-    dim = param_ftest['dim'][i]
-    domain = param_ftest['domain'][i]
 
-    df_result = pd.DataFrame(columns=["setIdx", "Swarm", "Omega", "phiP", "phiG",
-                                  "SwarmSize", "MaxIter", "BestFit", "avgSwarm",
-                                  "stdSwarm",
-                                  "MeanXCorr", "MeanVCorr", "Time"])
-    
-    df_result.to_csv(f"resultPSO-{str(problem).split(' ')[1]}.csv", index=False)
-    
-    Parallel(n_jobs=1)(delayed(parallel_pso)(j, domain, dim, setup, qmc_interval, ftest, df_result) for j in range(n))
-
-start = time.time()
-Parallel(n_jobs=2)(delayed(test)(i) for i in range(np.size(param_ftest['name'])))
-end = time.time()
-print('{:.4f} s'.format(end-start))
 
 
 
