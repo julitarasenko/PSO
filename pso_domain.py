@@ -12,8 +12,9 @@
         fitness <- problem to be solved
 """
 import numpy as np
+import math
 
-def pso_domain(d, swarm_size, domain, sets, sets_j, qmc_interval, test, max_iter): # Hyper-parameter of the algorithm
+def pso_domain(d, swarm_size, domain, sets, sets_j, qmc_interval, test, max_iter, exp_min, iftest): # Hyper-parameter of the algorithm
     # Get all sets
     # If test the touple length and based on this the random function param are set up
 
@@ -79,6 +80,8 @@ def pso_domain(d, swarm_size, domain, sets, sets_j, qmc_interval, test, max_iter
     gBest_fit = pBest_fit.min()
 
     results = []
+    stop = 0
+    gBest_fit_last = 0
 
     # PSO Loop
     for j in range(max_iter):
@@ -112,6 +115,20 @@ def pso_domain(d, swarm_size, domain, sets, sets_j, qmc_interval, test, max_iter
         gBest_fit = pBest_fit.min()
 
         results.append([j, gBest_fit, np.average(fit), x_corr, v_corr])
-    return [results[-1][1], np.array(results).mean(axis=0)[2],
-            np.array(results).std(axis=0)[2], np.array(results).mean(axis=0)[3],
-            np.array(results).mean(axis=0)[4]]  # X, results
+
+        if (iftest and math.isclose(gBest_fit, exp_min, abs_tol=1e-5)):
+            break
+
+        if (not(iftest) and math.isclose(gBest_fit, gBest_fit_last, abs_tol=1e-20)):
+            stop += 1
+        else:
+            stop = 0
+
+        if (not(iftest) and j >= 100 and j * 0.75 < stop):
+            break
+
+        gBest_fit_last = gBest_fit
+
+    return [round(results[-1][1], 5), round(np.array(results).mean(axis=0)[2], 5),
+            round(np.array(results).std(axis=0)[2], 5), round(np.array(results).mean(axis=0)[3], 5),
+            round(np.array(results).mean(axis=0)[4],5), j ]

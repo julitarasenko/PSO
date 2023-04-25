@@ -8,14 +8,15 @@ from pso_domain import pso_domain
 import time
 from joblib import Parallel, delayed
 
-def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, ex_min):
+def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, exp_min, test):
 
     #minimum resources
-    r = 2
+    r = 100
 
     # maximum resources
     R = len(generator_set['swarm']) * len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])
-    print("R: ", R)
+
+    # print("R: ", R)
     base = 2
 
     sMax = math.ceil(math.log(R/r, base))
@@ -37,7 +38,7 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, ex_min):
     df_result = pd.DataFrame(columns=["setIdx", "Swarm", "Omega", "phiP", "phiG",
                                       "SwarmSize", "MaxIter", "BestFit", "avgSwarm",
                                       "stdSwarm",
-                                      "MeanXCorr", "MeanVCorr", "Time",])
+                                      "MeanXCorr", "MeanVCorr", "Iter", "Time",])
     df_result.to_csv(f"resultSHA-{str(problem).split(' ')[1]}.csv", index=False)
 
     # The halving algorithm
@@ -46,9 +47,9 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, ex_min):
         ni = math.floor(R*math.pow(2, -i)) #number of setups for the iteration
         ri = r * math.pow(2, (i+s)) #number of resources in the iteration or swarm size?
 
-        Parallel(n_jobs=1)(delayed(parallel_pso)(j, ri, domain, dim, setup, qmc_interval, problem, df_result) for j in index[:ni])
+        Parallel(n_jobs=1)(delayed(parallel_pso)(j, ri, domain, dim, setup, qmc_interval, problem, df_result, exp_min, test) for j in index[:ni])
         
-        df_result["Criteria"] = df_result['BestFit'] - ex_min + df_result['MeanXCorr'] + df_result['MeanVCorr']
+        df_result["Criteria"] = df_result['BestFit'] - exp_min + df_result['MeanXCorr'] + df_result['MeanVCorr']
         df_result['BestRank'] = df_result['Criteria'].rank(ascending=False, pct=True)
         # Sort by rank and store in index vector
         df_result.sort_values(by='BestRank', ascending=False, inplace=True)
@@ -56,21 +57,21 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, ex_min):
         df_result = pd.DataFrame(columns=["setIdx", "Swarm", "Omega", "phiP", "phiG",
                                           "SwarmSize", "MaxIter", "BestFit", "avgSwarm",
                                           "stdSwarm",
-                                          "MeanXCorr", "MeanVCorr", "Time"])                                          
+                                          "MeanXCorr", "MeanVCorr", "Iter" "Time"])                                          
 
-def parallel_pso(j, ri, domain, dim, setup, qmc_interval, problem, df_result):
-    max_iter = int(ri*100) # might be connected with the algorithm as the resource
-    swarm_size = int(ri*100) # might be connected with the algorithm as the resource
+def parallel_pso(j, ri, domain, dim, setup, qmc_interval, problem, df_result, exp_min, test):
+    max_iter = int(ri / 25) # might be connected with the algorithm as the resource
+    swarm_size = 10 # might be connected with the algorithm as the resource
 
     start = time.time()
     
     if len(domain) == np.size(domain):
-        results = pso(dim, swarm_size, domain, setup[j], j, qmc_interval, problem, max_iter)
+        results = pso(dim, swarm_size, domain, setup[j], j, qmc_interval, problem, max_iter, exp_min, test)
     else:
-        results = pso_domain(dim, swarm_size, domain, setup[j], j, qmc_interval, problem, max_iter)
+        results = pso_domain(dim, swarm_size, domain, setup[j], j, qmc_interval, problem, max_iter, exp_min, test)
 
     finish = time.time()
-    t = (finish - start)
+    t = round(finish - start, 5)
 
     if (j < qmc_interval[0] or j > qmc_interval[1]):
         decomposition_swarm = str(setup[j][0]).partition('_distns.')[2].partition(' object')[0]
