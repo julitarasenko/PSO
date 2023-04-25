@@ -47,7 +47,7 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, exp_min, test)
         ni = math.floor(R*math.pow(2, -i)) #number of setups for the iteration
         ri = r * math.pow(2, (i+s)) #number of resources in the iteration or swarm size?
 
-        Parallel(n_jobs=1)(delayed(parallel_pso)(j, ri, domain, dim, setup, qmc_interval, problem, df_result, exp_min, test) for j in index[:ni])
+        Parallel(n_jobs=-1)(delayed(parallel_pso)(j, ri, domain, dim, setup, qmc_interval, problem, df_result, exp_min, test) for j in index[:ni])
         
         df_result["Criteria"] = df_result['BestFit'] - exp_min + df_result['MeanXCorr'] + df_result['MeanVCorr']
         df_result['BestRank'] = df_result['Criteria'].rank(ascending=False, pct=True)
@@ -77,7 +77,7 @@ def parallel_pso(j, ri, domain, dim, setup, qmc_interval, problem, df_result, ex
         decomposition_swarm = setup[j][0].dist.name
     else:
         decomposition_swarm = str(setup[j][0]).partition('qmc.')[2].partition("'")[0]
-        
+
     decomposition_w = setup[j][1].dist.name
     decomposition_phi_p = setup[j][2].dist.name
     decomposition_phi_g = setup[j][3].dist.name
