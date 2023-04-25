@@ -74,13 +74,13 @@ def parallel_pso(j, ri, domain, dim, setup, qmc_interval, problem, df_result, ex
     t = round(finish - start, 5)
 
     if (j < qmc_interval[0] or j > qmc_interval[1]):
-        decomposition_swarm = str(setup[j][0]).partition('_distns.')[2].partition(' object')[0]
+        decomposition_swarm = setup[j][0].dist.name
     else:
         decomposition_swarm = str(setup[j][0]).partition('qmc.')[2].partition("'")[0]
-
-    decomposition_w = str(setup[j][1]).partition('_distns.')[2].partition(' object')[0]
-    decomposition_phi_p = str(setup[j][2]).partition('_distns.')[2].partition(' object')[0]
-    decomposition_phi_g = str(setup[j][3]).partition('_distns.')[2].partition(' object')[0]
+        
+    decomposition_w = setup[j][1].dist.name
+    decomposition_phi_p = setup[j][2].dist.name
+    decomposition_phi_g = setup[j][3].dist.name
 
     df_result.loc[len(df_result)] = [j, decomposition_swarm, decomposition_w,
                                      decomposition_phi_p, decomposition_phi_g,
