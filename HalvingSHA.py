@@ -47,9 +47,9 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, exp_min, test)
         ni = math.floor(R*math.pow(2, -i)) #number of setups for the iteration
         ri = r * math.pow(2, (i+s)) #number of resources in the iteration or swarm size?
 
-        Parallel(n_jobs=-1)(delayed(parallel_pso)(j, ri, domain, dim, setup, qmc_interval, problem, df_result, exp_min, test) for j in index[:ni])
+        Parallel(n_jobs=1)(delayed(parallel_pso)(j, ri, domain, dim, setup, qmc_interval, problem, df_result, exp_min, test) for j in index[:ni])
         
-        df_result["Criteria"] = df_result['BestFit'] - exp_min + df_result['MeanXCorr'] + df_result['MeanVCorr']
+        df_result['Criteria'] = (df_result['BestFit'] - exp_min) / df_result['BestFit'].max + df_result['Iter'] / df_result['Iter'].max + df_result['MeanXCorr'] / df_result['MeanXCorr'].max + df_result['MeanVCorr'] / df_result['MeanVCorr'].max
         df_result['BestRank'] = df_result['Criteria'].rank(ascending=False, pct=True)
         # Sort by rank and store in index vector
         df_result.sort_values(by='BestRank', ascending=False, inplace=True)
@@ -57,10 +57,10 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, exp_min, test)
         df_result = pd.DataFrame(columns=["setIdx", "Swarm", "Omega", "phiP", "phiG",
                                           "SwarmSize", "MaxIter", "BestFit", "avgSwarm",
                                           "stdSwarm",
-                                          "MeanXCorr", "MeanVCorr", "Iter" "Time"])                                          
+                                          "MeanXCorr", "MeanVCorr", "Iter", "Time",])                                          
 
 def parallel_pso(j, ri, domain, dim, setup, qmc_interval, problem, df_result, exp_min, test):
-    max_iter = int(ri / 25) # might be connected with the algorithm as the resource
+    max_iter = int(ri/25) # might be connected with the algorithm as the resource
     swarm_size = 10 # might be connected with the algorithm as the resource
 
     start = time.time()
