@@ -30,7 +30,7 @@ def pso_domain(d, swarm_size, domain, sets, sets_j, qmc_interval, test, max_iter
     if (sets_j < qmc_interval[0] or sets_j > qmc_interval[1]):
         X_ = sets[0].rvs(size=(swarm_size, d))
     else:
-        X_ = sets[0][0](d=d).random(n=swarm_size)
+        X_ = sets[0](d=d).random(n=swarm_size)
     # Transformation to a given domain
     old_min, old_max = X_.min(), X_.max()
     X = np.zeros((swarm_size, d))
