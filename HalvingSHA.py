@@ -49,7 +49,27 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, exp_min, test)
 
         Parallel(n_jobs=1)(delayed(parallel_pso)(j, ri, domain, dim, setup, qmc_interval, problem, df_result, exp_min, test) for j in index[:ni])
         
-        df_result['Criteria'] = (df_result['BestFit'] - exp_min) / df_result['BestFit'].max + df_result['Iter'] / df_result['Iter'].max + df_result['MeanXCorr'] / df_result['MeanXCorr'].max + df_result['MeanVCorr'] / df_result['MeanVCorr'].max
+        if df_result['BestFit'].max() == exp_min:
+            BestFit = 0
+        else:
+            BestFit = (df_result['BestFit'] - exp_min) / (df_result['BestFit'].max() - exp_min)
+
+        if df_result['Iter'].max() == 0:
+            Iter = 0
+        else:
+            Iter = df_result['Iter'] / df_result['Iter'].max()
+
+        if df_result['MeanXCorr'].max() == 0:
+            MeanXCorr = 0
+        else:
+            MeanXCorr = df_result['MeanXCorr'] / df_result['MeanXCorr'].max()
+
+        if df_result['MeanVCorr'].max() == 0:
+            MeanVCorr = 0
+        else:
+            MeanVCorr = df_result['MeanVCorr'] / df_result['MeanVCorr'].max()
+
+        df_result['Criteria'] = BestFit  + Iter + MeanXCorr + MeanVCorr
         df_result['BestRank'] = df_result['Criteria'].rank(ascending=False, pct=True)
         # Sort by rank and store in index vector
         df_result.sort_values(by='BestRank', ascending=False, inplace=True)
