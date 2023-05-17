@@ -61,10 +61,10 @@ def test(i):
     
     df_result.to_csv(f"resultPSO-{str(ftest).split(' ')[1]}.csv", index=False)
     
-    Parallel(n_jobs=-1)(delayed(parallel_pso)(j, domain, dim, setup, qmc_interval, ftest, df_result, exp_min, True) for j in range(n))
+    Parallel(n_jobs=4)(delayed(parallel_pso)(j, domain, dim, setup, qmc_interval, ftest, df_result, exp_min, True) for j in range(n))
 
 start = time.time()
-Parallel(n_jobs=-1)(delayed(test)(i) for i in range(np.size(param_ftest['name'])))
+Parallel(n_jobs=4)(delayed(test)(i) for i in range(np.size(param_ftest['name'])))
 end = time.time()
 print('{:.4f} s'.format(end-start))
 
@@ -82,10 +82,10 @@ def problem(i):
     
     df_result.to_csv(f"resultPSO-{str(problem).split(' ')[1]}.csv", index=False)
 
-    Parallel(n_jobs=-1)(delayed(parallel_pso)(j, domain, dim, setup, qmc_interval, problem, df_result, exp_min, False) for j in range(n))
+    Parallel(n_jobs=4)(delayed(parallel_pso)(j, domain, dim, setup, qmc_interval, problem, df_result, exp_min, False) for j in range(n))
                                         
 start = time.time()
-Parallel(n_jobs=-1)(delayed(problem)(i) for i in range(np.size(param_problem['name'])))
+Parallel(n_jobs=4)(delayed(problem)(i) for i in range(np.size(param_problem['name'])))
 end = time.time()
 print('{:.4f} s'.format(end-start))
 

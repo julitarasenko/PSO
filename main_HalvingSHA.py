@@ -16,7 +16,7 @@ def test(i):
     HalvingSHA(generator_set, qmc_interval, ftest, dim, domain, exp_min, True)
 
 start = time.time()
-Parallel(n_jobs=6)(delayed(test)(i) for i in range(np.size(param_ftest['name'])))
+Parallel(n_jobs=4)(delayed(test)(i) for i in range(np.size(param_ftest['name'])))
 end = time.time()
 print('{:.4f} s'.format(end-start))
 
@@ -28,6 +28,6 @@ def problem(i):
     HalvingSHA(generator_set, qmc_interval, problem, dim, domain, exp_min, False)
 
 start = time.time()
-Parallel(n_jobs=5)(delayed(problem)(i) for i in range(np.size(param_problem['name'])))
+Parallel(n_jobs=4)(delayed(problem)(i) for i in range(np.size(param_problem['name'])))
 end = time.time()
 print('{:.4f} s'.format(end-start))
