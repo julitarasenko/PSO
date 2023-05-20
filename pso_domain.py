@@ -77,13 +77,13 @@ def pso_domain(d, swarm_size, domain, sets, sets_j, qmc_interval, test, max_iter
         if (math.isclose(gBest_fit, exp_min, abs_tol=1e-5)):
             break
 
-        if (math.isclose(gBest_fit, gBest_fit_last, abs_tol=1e-20)):
-            stop += 1
-        else:
-            stop = 0
+        # if (math.isclose(gBest_fit, gBest_fit_last, abs_tol=1e-20)):
+        #     stop += 1
+        # else:
+        #     stop = 0
 
-        if (j >= 5000 and j * 0.75 < stop):
-            break
+        # if (j >= 5000 and j * 0.75 < stop):
+        #     break
 
         gBest_fit_last = gBest_fit
 
