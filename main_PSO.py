@@ -52,7 +52,7 @@ def test(i):
     ftest = param_ftest['name'][i]
     dim = param_ftest['dim'][i]
     domain = param_ftest['domain'][i]
-    exp_min = param_problem['min'][i]
+    exp_min = param_ftest['min'][i]
 
     df_result = pd.DataFrame(columns=["setIdx", "Swarm", "Omega", "phiP", "phiG",
                                   "SwarmSize", "MaxIter", "BestFit", "avgSwarm",
@@ -64,30 +64,30 @@ def test(i):
     Parallel(n_jobs=4)(delayed(parallel_pso)(j, domain, dim, setup, qmc_interval, ftest, df_result, exp_min, True) for j in range(n))
 
 start = time.time()
-Parallel(n_jobs=4)(delayed(test)(i) for i in range(np.size(param_ftest['name'])))
+Parallel(n_jobs=3)(delayed(test)(i) for i in range(np.size(param_ftest['name'])))
 end = time.time()
 print('{:.4f} s'.format(end-start))
 
 
-def problem(i):
-    problem = param_problem['name'][i]
-    dim = param_problem['dim'][i]
-    domain = param_problem['domain'][i]
-    exp_min = param_problem['min'][i] 
+# def problem(i):
+#     problem = param_problem['name'][i]
+#     dim = param_problem['dim'][i]
+#     domain = param_problem['domain'][i]
+#     exp_min = param_problem['min'][i] 
 
-    df_result = pd.DataFrame(columns=["setIdx", "Swarm", "Omega", "phiP", "phiG",
-                                  "SwarmSize", "MaxIter", "BestFit", "avgSwarm",
-                                  "stdSwarm",
-                                  "MeanXCorr", "MeanVCorr", "Iter", "Time"])
+#     df_result = pd.DataFrame(columns=["setIdx", "Swarm", "Omega", "phiP", "phiG",
+#                                   "SwarmSize", "MaxIter", "BestFit", "avgSwarm",
+#                                   "stdSwarm",
+#                                   "MeanXCorr", "MeanVCorr", "Iter", "Time"])
     
-    df_result.to_csv(f"resultPSO-{str(problem).split(' ')[1]}.csv", index=False)
+#     df_result.to_csv(f"resultPSO-{str(problem).split(' ')[1]}.csv", index=False)
 
-    Parallel(n_jobs=4)(delayed(parallel_pso)(j, domain, dim, setup, qmc_interval, problem, df_result, exp_min, False) for j in range(n))
+#     Parallel(n_jobs=4)(delayed(parallel_pso)(j, domain, dim, setup, qmc_interval, problem, df_result, exp_min, False) for j in range(n))
                                         
-start = time.time()
-Parallel(n_jobs=4)(delayed(problem)(i) for i in range(np.size(param_problem['name'])))
-end = time.time()
-print('{:.4f} s'.format(end-start))
+# start = time.time()
+# Parallel(n_jobs=4)(delayed(problem)(i) for i in range(np.size(param_problem['name'])))
+# end = time.time()
+# print('{:.4f} s'.format(end-start))
 
 
 
