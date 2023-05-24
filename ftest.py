@@ -19,7 +19,7 @@ def rosenbrock(xx):
     d1, d = xx.shape
     arr1 = xx[:, 0 : d - 1]
     arr2 = xx[:, 1:]
-    return np.sum(100*(arr2 - arr1**2)**2 + (1-arr1)**2, axis=1)
+    return np.sum(100*(arr2 - arr1**2)**2 + (arr1 - 1)**2, axis=1)
 
 #Trid 6 function (nonseparable)
 def trid6(xx):
@@ -35,14 +35,15 @@ def easom(xx):
     return (-fact1 * fact2)
 
 #Multimodal: 
-# 1. Ackley function (nonseparable) 
+# 1. Ackley function (nonseparable)
+
 def ackley(xx):
     d1, d = xx.shape
     c = 2 * np.pi
     a = 20
     sum1 = np.sum(xx**2, axis=1)
     sum2 = np.sum(np.cos(c * xx), axis=1)
-    term1 = -a * np.exp(-0.02 * np.sqrt(sum1 / d))
+    term1 = -a * np.exp(-0.2 * np.sqrt(sum1 / d))
     term2 = -np.exp(sum2 / d)
     return term1 + term2 + a + np.exp(1)
 
@@ -110,3 +111,8 @@ def levy8(xx):
     term3 = (w[:, d-1] - 1)**2 * (1 + (np.sin(2 * np.pi * w[:, d-1]))**2)
     sum = np.sum((w[:, 0:d-1] - 1)**2 * (1 + 10 * (np.sin(np.pi * w[:, 0:d-1] + 1))**2), axis = 1)
     return term1 + sum + term3
+
+def brown(xx):
+    arr1 = xx[:, :-1]
+    arr2 = xx[:, 1:]
+    return np.sum((arr1**2)**(arr2**2 + 1) + (arr2**2)**(arr1**2 + 1), axis=1)
