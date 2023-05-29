@@ -5,12 +5,12 @@ loc, scale = 0, 1
 def distribution_sets():
     generator_set = {
             'swarm': [  
-                        # ss.norm(loc=loc, scale=scale),
-                        # ss.uniform(loc=loc, scale=scale),
-                        # ss.levy(loc=loc, scale=scale),
-                        ss.qmc.Sobol, #start library scipy.stats.qmc in index 0
+                        ss.norm(loc=loc, scale=scale),
+                        ss.uniform(loc=loc, scale=scale),
+                        ss.levy(loc=loc, scale=scale),
+                        ss.qmc.Sobol, #start library scipy.stats.qmc in index 3
                         ss.qmc.Halton, 
-                        ss.qmc.LatinHypercube, #end ibrary scipy.stats.qmc in index 2
+                        ss.qmc.LatinHypercube, #end ibrary scipy.stats.qmc in index 5
                         # # (ss.qmc.PoissonDisk,)
                     ],
 
@@ -87,8 +87,8 @@ def distribution_sets():
     generator_set.update({'phi_p': generator_set['omega']})
     generator_set.update({'phi_g': generator_set['omega']})
 
-    qmc_start_index = 0
-    qmc_end_index = 2
+    qmc_start_index = 3
+    qmc_end_index = 5
 
     qmc_interval = [len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])*qmc_start_index,
                     len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])*(qmc_end_index+1)-1]

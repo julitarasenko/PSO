@@ -44,10 +44,10 @@ def execute_pso(func, bound, dim, min_value, x_opt, iterations, i, qmc_interval,
     avg_swarm = np.mean(func_average_swarm)
     avg_max_iter = np.mean(func_max_iters)
 
-    print(f'Function: {func.__name__}\n',
-          f' Best score: {avg_best_score},\n',
-          f' Average swarm: {avg_swarm},\n',
-          f' Average max iteration: {avg_max_iter}')
+    # print(f'Function: {func.__name__}\n',
+    #       f' Best score: {avg_best_score},\n',
+    #       f' Average swarm: {avg_swarm},\n',
+    #       f' Average max iteration: {avg_max_iter}')
 
     # Write results to a CSV file
     if (i < qmc_interval[0] or i > qmc_interval[1]):
