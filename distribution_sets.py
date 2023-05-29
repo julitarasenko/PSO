@@ -5,12 +5,12 @@ loc, scale = 0, 1
 def distribution_sets():
     generator_set = {
             'swarm': [  
-                        ss.norm(loc=loc, scale=scale),
-                        ss.uniform(loc=loc, scale=scale),
-                        ss.levy(loc=loc, scale=scale),
-                        # ss.qmc.Sobol, #start library scipy.stats.qmc in index 2
-                        # ss.qmc.Halton, 
-                        # ss.qmc.LatinHypercube, #end ibrary scipy.stats.qmc in index 4
+                        # ss.norm(loc=loc, scale=scale),
+                        # ss.uniform(loc=loc, scale=scale),
+                        # ss.levy(loc=loc, scale=scale),
+                        ss.qmc.Sobol, #start library scipy.stats.qmc in index 0
+                        ss.qmc.Halton, 
+                        ss.qmc.LatinHypercube, #end ibrary scipy.stats.qmc in index 2
                         # # (ss.qmc.PoissonDisk,)
                     ],
 
@@ -35,8 +35,8 @@ def distribution_sets():
                         ss.foldcauchy(4.72, loc=loc, scale=scale),
                         ss.foldnorm(1.95, loc=loc, scale=scale),
                         ss.gamma(1.99, loc=loc, scale=scale),
-                        ss.gausshyper(13.76, 3.12, 2.51, 5.18, loc=loc, scale=scale),
-                        ss.genexpon(9.13, 16.23, 3.28, loc=loc, scale=scale),
+                        # ss.gausshyper(13.76, 3.12, 2.51, 5.18, loc=loc, scale=scale),
+                        # ss.genexpon(9.13, 16.23, 3.28, loc=loc, scale=scale),
                         ss.gengamma(4.42, 3.12, loc=loc, scale=scale),
                         ss.gengamma(4.42, -3.12, loc=loc, scale=scale),
                         ss.genhalflogistic(0.77, loc=loc, scale=scale),
@@ -53,8 +53,8 @@ def distribution_sets():
                         ss.invweibull(10.58, loc=loc, scale=scale),
                         ss.johnsonsb(4.32, 3.18, loc=loc, scale=scale),
                         ss.kappa3(1, loc=loc, scale=scale),
-                        ss.ksone(1000, loc=loc, scale=scale),
-                        ss.kstwo(10, loc=loc, scale=scale),
+                        # ss.ksone(1000, loc=loc, scale=scale),
+                        # ss.kstwo(10, loc=loc, scale=scale),
                         ss.kstwobign(loc=loc, scale=scale),
                         ss.levy(loc=loc, scale=scale),
                         ss.loglaplace(3.25, loc=loc, scale=scale),
@@ -87,8 +87,8 @@ def distribution_sets():
     generator_set.update({'phi_p': generator_set['omega']})
     generator_set.update({'phi_g': generator_set['omega']})
 
-    qmc_start_index = 3
-    qmc_end_index = 5
+    qmc_start_index = 0
+    qmc_end_index = 2
 
     qmc_interval = [len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])*qmc_start_index,
                     len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])*(qmc_end_index+1)-1]
