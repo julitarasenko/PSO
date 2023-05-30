@@ -90,7 +90,7 @@ def distribution_sets():
     qmc_start_index = 3
     qmc_end_index = 5
 
-    qmc_interval = [len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])*qmc_start_index,
-                    len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])*(qmc_end_index+1)-1]
+    qmc_interval = [len(generator_set['phi_p']) * len(generator_set['phi_g'])*qmc_start_index,
+                    len(generator_set['phi_p']) * len(generator_set['phi_g'])*(qmc_end_index+1)-1]
     
     return generator_set, qmc_interval
