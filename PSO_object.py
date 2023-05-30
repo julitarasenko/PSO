@@ -2,11 +2,12 @@ import numpy as np
 import math
 import time
 import random
+from scipy import stats as ss
 
 
 class PSO:
-    def __init__(self, n_particles, dim, bounds, test_func, expected_min, expected_x, i, qmc_interval, swarm_random=None, 
-                 p_random=None, g_random=None, d_type=np.float64):
+    def __init__(self, n_particles, dim, bounds, test_func, expected_min, expected_x,
+                 swarm_random=None, p_random=None, g_random=None, d_type=np.float64):
         self.n_particles = n_particles
         self.dim = dim
         self.bounds = bounds
@@ -17,7 +18,7 @@ class PSO:
         self.p_random = p_random
         self.g_random = g_random
         self.d_type = d_type
-        self.positions = self.initialize_positions(i, qmc_interval)
+        self.positions = self.initialize_positions()
         self.velocities = self.initialize_velocities()
         self.best_positions = self.positions.copy()
         self.best_scores = self.func(self.positions)
@@ -28,30 +29,32 @@ class PSO:
         self.accuracy_history = []
 
 
-    def initialize_positions(self, i, qmc_interval):
+    def initialize_positions(self):
+        np.random.seed()
         if self.swarm_random is None:
-            x_ = np.random.uniform(self.bounds[0], self.bounds[1], (self.n_particles, self.dim)).astype(self.d_type)
-        elif (i < qmc_interval[0] or i > qmc_interval[1]):
-            x_ = self.swarm_random.rvs(size=(self.n_particles, self.dim)).astype(self.d_type)
-        else:
+            return np.random.uniform(self.bounds[0], self.bounds[1], (self.n_particles, self.dim)).astype(self.d_type)
+        elif isinstance(self.swarm_random, type):
             x_ = self.swarm_random(d=self.dim).random(n=self.n_particles).astype(self.d_type)
-        # Transformation to a given domain
-        old_min, old_max = x_.min(), x_.max()
-        return ((x_ - old_min) / (old_max - old_min)) * (self.bounds[1] - self.bounds[0]) + self.bounds[0]
+            return ss.qmc.scale(x_, l_bounds=[self.bounds[0]]*self.dim, u_bounds=[self.bounds[1]]*self.dim) #Transformation to a given range
+        else:
+            x_ = self.swarm_random.rvs(size=(self.n_particles, self.dim)).astype(self.d_type)
+            # Transformation to a given domain
+            old_min, old_max = x_.min(), x_.max()
+            return ((x_ - old_min) / (old_max - old_min)) * (self.bounds[1] - self.bounds[0]) + self.bounds[0]
 
     def initialize_velocities(self):
         return np.random.standard_normal((self.n_particles, self.dim)).astype(self.d_type) #normal
         # np.np.random.uniform(-1, 1, (n_particles, dim)).astype(self.d_type) # uniform
 
     def generate_p(self, size):
-        random.seed()
+        np.random.seed()
         if self.p_random is None:
             return np.random.rand(size, self.dim)
         else:
             return self.p_random.rvs(size=(size, self.dim)).astype(self.d_type)
 
     def generate_g(self, size):
-        random.seed()
+        np.random.seed()
         if self.g_random is None:
             return np.random.rand(size, self.dim)
         else:
