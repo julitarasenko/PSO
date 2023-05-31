@@ -60,7 +60,17 @@ def test_sets():
                    np.zeros(n), np.ones(2)*np.pi, np.zeros(n), # brown, easom, ackley,
                    np.zeros(n), np.zeros(n), list(np.arange(1, n + 1)),  # griewank, alpine, perm,
                    np.ones(n)*420.9687, np.zeros(n), np.zeros(n),  # schwefel, yang3, yang4,
-                   np.zeros(n), np.zeros(n), np.ones(n)]  # csendes, yang2, levy8
+                   np.zeros(n), np.zeros(n), np.ones(n)],  # csendes, yang2, levy8
+        'unimodal': [True, True, True, # spheref, zakharov, rosenbrock
+                     True, True, False, # brown, easom, ackley,
+                     False, False, False, # griewank, alpine, perm,
+                     False, False, False, # schwefel, yang3, yang4,
+                     False, False, False,], # csendes, yang2, levy8
+        'separable': [True, False, False, # spheref, zakharov, rosenbrock
+                      False, True, False, # brown, easom, ackley,
+                      False, True, True, # griewank, alpine, perm,
+                      False, False, False, # schwefel, yang3, yang4,
+                      True, False, False] # csendes, yang2, levy8
     }
 
     param_problem ={}
