@@ -30,11 +30,6 @@ def test_sets():
 
     n = 20
 
-    # trid_xmin = []
-    #
-    # for i in range(6):
-    #     trid_xmin.append((i + 1) * (6- i))
-
     param_ftest = {
         'name': [spheref, zakharov, rosenbrock,
                  brown, easom, ackley,
@@ -42,7 +37,7 @@ def test_sets():
                  schwefel, yang3, yang4,
                  csendes, yang2, levy8],
         'dim': [n, n, n, # spheref, zakharov, rosenbrock,
-                n, 2, n, # trid6, easom, ackley,
+                n, n, n, # trid6, easom, ackley,
                 n, n, n, # griewank, alpine, perm,
                 n, n, n, # schwefel, yang3, yang4,
                 n, n, n], # csendes, yang2, levy
@@ -74,13 +69,5 @@ def test_sets():
     }
 
     param_problem ={}
-    # n = 20
-    #
-    # param_ftest = {
-    #     'name': [spheref, rosenbrock, griewank],
-    #     'dim': [n, n, n],
-    #     'domain': [[0, 10], [-5, 10], [-100, 100]],
-    #     'min': [0, 0, 0]
-    # }
 
     return param_problem, param_ftest
