@@ -1,98 +1,72 @@
-import numpy as np
-import time
-from joblib import Parallel, delayed
-import pandas as pd
-from pso import pso
-from pso_domain import pso_domain
-from distribution_sets import distribution_sets
+import warnings
+from Run_optimization import run_optimization
+from concurrent.futures import ProcessPoolExecutor
 from test_sets import test_sets
+import numpy as np
+from distribution_sets import distribution_sets
+import pandas as pd
+import time
 
-generator_set, qmc_interval = distribution_sets()
-param_problem, param_ftest = test_sets()
+generator_set = distribution_sets()
+_, param_ftest = test_sets()
+cores = 15
+d_type = np.float128
 
-setup = [] # store all combinations of 4 params combinations
-for i1 in generator_set['swarm']:
-    for i2 in generator_set['omega']:
-        for i3 in generator_set['phi_p']:
-            for i4 in generator_set['phi_g']:
-                setup.append([i1, i2, i3, i4])
+def execute_algorithm(func, dim, bound, min_value, x_opt):
+    warnings.filterwarnings('ignore')
+    max_iter = 10000  # Number of iterations
 
-n = len(generator_set['swarm']) * len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])
+    setup = [] # store all combinations of 4 params combinations
+    for i1 in generator_set['swarm']:
+        for i2 in generator_set['phi_p']:
+            for i3 in generator_set['phi_g']:
+                    setup.append([i1, i2, i3])
 
-def parallel_pso(j, domain, dim, setup, qmc_interval, problem, df_result, exp_min, test):
-    max_iter = 20000 # might be connected with the algorithm as the resource
-    swarm_size = 10 # might be connected with the algorithm as the resource
-
-    start = time.time()
+    df_result = pd.DataFrame(columns=["setIdx", "Swarm", "phiP", "phiG",
+                                      "MaxIter", "BestScore", "Mean_best",
+                                      "Std_best", "Mean_f", "Mean_acc", "Std_acc",
+                                      "Max_acc", "Iteration", "Time",])
+    df_result.to_csv(f"result-{str(func).split(' ')[1]}.csv", index=False)
     
-    if len(domain) == np.size(domain):
-        results = pso(dim, swarm_size, domain, setup[j], j, qmc_interval, problem, max_iter, exp_min, test)
-    else:
-        results = pso_domain(dim, swarm_size, domain, setup[j], j, qmc_interval, problem, max_iter, exp_min, test)
+    for j in range(len(setup)):
+        swarm_dist = setup[j][0]
+        dist1 = setup[j][1]
+        dist2 = setup[j][2]
 
-    finish = time.time()
-    t = round(finish - start, 5)
-
-    if (j < qmc_interval[0] or j > qmc_interval[1]):
-        decomposition_swarm = setup[j][0].dist.name
-    else:
-        decomposition_swarm = str(setup[j][0]).partition('qmc.')[2].partition("'")[0]
+        params = [(dim, bound, func, min_value, max_iter, x_opt, swarm_dist, dist1, dist2, d_type)]
+        results = run_optimization(params)
+            
+        if isinstance(swarm_dist, type):
+            swarm_dist_name = str(swarm_dist).split('.')[-1][:-2]
+        else:
+            swarm_dist_name = swarm_dist.dist.name
         
-    decomposition_w = setup[j][1].dist.name
-    decomposition_phi_p = setup[j][2].dist.name
-    decomposition_phi_g = setup[j][3].dist.name
-    
-    df_new_row = pd.DataFrame([[j, decomposition_swarm, decomposition_w,
-                                decomposition_phi_p, decomposition_phi_g,
-                                swarm_size, max_iter]+ results + [t]], 
-                                columns=df_result.columns)
-    df_new_row.to_csv(f"resultPSO-{str(problem).split(' ')[1]}.csv", mode='a', header=False, index=False)  
+        phi_p_dist_name = dist1.dist.name
+        phi_g_dist_name = dist2.dist.name
+
+        df_result.loc[len(df_result)] = [j, swarm_dist_name, phi_p_dist_name, 
+                                            phi_g_dist_name, max_iter] + results
+        df_new_row = pd.DataFrame([[j, swarm_dist_name, phi_p_dist_name, 
+                                    phi_g_dist_name, max_iter] + results], 
+                                    columns=df_result.columns)
+        df_new_row.to_csv(f"result-{str(func).split(' ')[1]}.csv", mode='a', header=False, index=False) 
 
 def test(i):
-    ftest = param_ftest['name'][i]
+    func = param_ftest['name'][i]
     dim = param_ftest['dim'][i]
-    domain = param_ftest['domain'][i]
-    exp_min = param_ftest['min'][i]
-
-    df_result = pd.DataFrame(columns=["setIdx", "Swarm", "Omega", "phiP", "phiG",
-                                  "SwarmSize", "MaxIter", "BestFit", "avgSwarm",
-                                  "stdSwarm",
-                                  "MeanXCorr", "MeanVCorr", "Iter", "Time"])
-    
-    df_result.to_csv(f"resultPSO-{str(ftest).split(' ')[1]}.csv", index=False)
-    
-    Parallel(n_jobs=4)(delayed(parallel_pso)(j, domain, dim, setup, qmc_interval, ftest, df_result, exp_min, True) for j in range(n))
-
-start = time.time()
-Parallel(n_jobs=3)(delayed(test)(i) for i in range(np.size(param_ftest['name'])))
-end = time.time()
-print('{:.4f} s'.format(end-start))
+    bound = param_ftest['domain'][i]
+    min_value = param_ftest['min'][i]
+    x_opt = param_ftest['x_best'][i]
+    execute_algorithm(func, dim, bound, min_value, x_opt)
 
 
-# def problem(i):
-#     problem = param_problem['name'][i]
-#     dim = param_problem['dim'][i]
-#     domain = param_problem['domain'][i]
-#     exp_min = param_problem['min'][i] 
+def main():
+    start = time.time()
+    with ProcessPoolExecutor(max_workers=cores) as executor:
+        executor.map(test, range(len(param_ftest['name'])))
 
-#     df_result = pd.DataFrame(columns=["setIdx", "Swarm", "Omega", "phiP", "phiG",
-#                                   "SwarmSize", "MaxIter", "BestFit", "avgSwarm",
-#                                   "stdSwarm",
-#                                   "MeanXCorr", "MeanVCorr", "Iter", "Time"])
-    
-#     df_result.to_csv(f"resultPSO-{str(problem).split(' ')[1]}.csv", index=False)
+    end = time.time()
+    print('{:.4f} s'.format(end-start))
 
-#     Parallel(n_jobs=4)(delayed(parallel_pso)(j, domain, dim, setup, qmc_interval, problem, df_result, exp_min, False) for j in range(n))
-                                        
-# start = time.time()
-# Parallel(n_jobs=4)(delayed(problem)(i) for i in range(np.size(param_problem['name'])))
-# end = time.time()
-# print('{:.4f} s'.format(end-start))
-
-
-
-
-
-
-
-
+if __name__ == "__main__":
+    main()
