@@ -37,7 +37,7 @@ def test_sets():
                  schwefel, yang3, yang4,
                  csendes, yang2, levy8],
         'dim': [n, n, n, # spheref, zakharov, rosenbrock,
-                n, n, n, # trid6, easom, ackley,
+                n, 2, n, # trid6, easom, ackley,
                 n, n, n, # griewank, alpine, perm,
                 n, n, n, # schwefel, yang3, yang4,
                 n, n, n], # csendes, yang2, levy

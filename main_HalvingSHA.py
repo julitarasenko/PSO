@@ -4,6 +4,7 @@ from joblib import Parallel, delayed
 from HalvingSHA import HalvingSHA
 from distribution_sets import distribution_sets
 from test_sets import test_sets
+from concurrent.futures import ProcessPoolExecutor
 
 generator_set = distribution_sets()
 _, param_ftest = test_sets()
@@ -18,10 +19,16 @@ def test(i):
     x_opt = param_ftest['x_best'][i]
     HalvingSHA(generator_set, func, dim, bound, min_value, x_opt, d_type)
 
-start = time.time()
-Parallel(n_jobs=cores)(delayed(test)(i) for i in range(np.size(param_ftest['name'])))
-end = time.time()
-print('{:.4f} s'.format(end-start))
+def main():
+    start = time.time()
+    with ProcessPoolExecutor(max_workers=cores) as executor:
+        executor.map(test, range(len(param_ftest['name'])))
+
+    end = time.time()
+    print('{:.4f} s'.format(end-start))
+
+if __name__ == "__main__":
+    main()
 
 # def problem(i):
 #     problem = param_problem['name'][i]
