@@ -139,11 +139,11 @@ class DE:
         # Calculate the total execution time
         end_time = time.time()
         execution_time = end_time - start_time
-        x1 = np.linspace(0.0, iterations, num=iterations)
-        pyplot.plot(x1, self.best_scores_history, '.-')
-        pyplot.xlabel('Improvement Number')
-        pyplot.ylabel('Evaluation f(x)')
-        pyplot.show()
+        # x1 = np.linspace(0.0, iterations, num=iterations)
+        # pyplot.plot(x1, self.best_scores_history, '.-')
+        # pyplot.xlabel('Improvement Number')
+        # pyplot.ylabel('Evaluation f(x)')
+        # pyplot.show()
 
         return [self.global_best_position,  # 1
                 self.func(np.array([self.global_best_position])),  # 2

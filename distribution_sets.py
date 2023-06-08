@@ -14,7 +14,7 @@ def distribution_sets():
         'swarm': [
                   ss.norm(loc=loc, scale=scale),
                   ss.uniform(loc=loc, scale=scale),
-                #   ss.levy(loc=loc, scale=scale),
+                  ss.levy(loc=loc, scale=scale),
                   ss.qmc.Sobol, 
                 #   ss.qmc.Halton,
                 #   ss.qmc.LatinHypercube,
