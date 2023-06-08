@@ -1,27 +1,19 @@
-from cmath import pi
 import pandas as pd
 import math
-import numpy as np
-import scipy.stats as ss
-from pso import pso
-from pso_domain import pso_domain 
-import time
-from joblib import Parallel, delayed
+from Run_optimization import run_optimization
 
-def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, exp_min, test):
-
+def HalvingSHA(generator_set, func, dim, bound, min_value, x_opt, d_type):
     #minimum resources
-    r = 100
+    r = 5
 
     # maximum resources
-    R = len(generator_set['swarm']) * len(generator_set['omega']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])
+    R = len(generator_set['swarm']) * len(generator_set['phi_p']) * len(generator_set['phi_g'])
 
     # print("R: ", R)
     base = 2
 
     sMax = math.ceil(math.log(R/r, base))
     s = 0
-
 
     # Generating table of setups from all combinations, where the list contains
     # 0 - swarm
@@ -30,16 +22,15 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, exp_min, test)
     # 3 - phi_g
     setup = [] # store all combinations of 4 params combinations
     for i1 in generator_set['swarm']:
-        for i2 in generator_set['omega']:
-            for i3 in generator_set['phi_p']:
-                for i4 in generator_set['phi_g']:
-                    setup.append([i1, i2, i3, i4])
+        for i2 in generator_set['phi_p']:
+            for i3 in generator_set['phi_g']:
+                    setup.append([i1, i2, i3])
 
-    df_result = pd.DataFrame(columns=["setIdx", "Swarm", "Omega", "phiP", "phiG",
-                                      "SwarmSize", "MaxIter", "BestFit", "avgSwarm",
-                                      "stdSwarm",
-                                      "MeanXCorr", "MeanVCorr", "Iter", "Time",])
-    df_result.to_csv(f"resultSHA-{str(problem).split(' ')[1]}.csv", index=False)
+    df_result = pd.DataFrame(columns=["setIdx", "Swarm", "phiP", "phiG",
+                                      "MaxIter", "BestScore", "Mean_best",
+                                      "Std_best", "Mean_f", "Mean_acc", "Std_acc",
+                                      "Max_acc", "Iteration", "Time",])
+    df_result.to_csv(f"resultSHA-{str(func).split(' ')[1]}.csv", index=False)
 
     # The halving algorithm
     index = list(range(R))
@@ -47,69 +38,57 @@ def HalvingSHA(generator_set, qmc_interval, problem, dim, domain, exp_min, test)
         ni = math.floor(R*math.pow(2, -i)) #number of setups for the iteration
         ri = r * math.pow(2, (i+s)) #number of resources in the iteration or swarm size?
 
-        Parallel(n_jobs=1)(delayed(parallel_pso)(j, ri, domain, dim, setup, qmc_interval, problem, df_result, exp_min, test) for j in index[:ni])
+        for j in index[:ni]:
+            max_iter = int(ri*5) # might be connected with the algorithm as the resource
+            
+            swarm_dist = setup[j][0]
+            dist1 = setup[j][1]
+            dist2 = setup[j][2]
+
+            params = [(dim, bound, func, min_value, max_iter, x_opt, swarm_dist, dist1, dist2, d_type)]
+            results = run_optimization(params)
+                
+            if isinstance(swarm_dist, type):
+                swarm_dist_name = str(swarm_dist).split('.')[-1][:-2]
+            else:
+                swarm_dist_name = swarm_dist.dist.name
+            
+            phi_p_dist_name = dist1.dist.name
+            phi_g_dist_name = dist2.dist.name
+
+            df_result.loc[len(df_result)] = [j, swarm_dist_name, phi_p_dist_name, 
+                                             phi_g_dist_name, max_iter] + results
+            df_new_row = pd.DataFrame([[j, swarm_dist_name, phi_p_dist_name, 
+                                        phi_g_dist_name, max_iter] + results], 
+                                        columns=df_result.columns)
+            df_new_row.to_csv(f"resultSHA-{str(func).split(' ')[1]}.csv", mode='a', header=False, index=False)  
         
-        if df_result['BestFit'].max() == exp_min:
-            BestFit = 0
+        if df_result['Mean_best'].max() == min_value:
+            Mean_best = 0
         else:
-            BestFit = (df_result['BestFit'] - exp_min) / (df_result['BestFit'].max() - exp_min)
+            Mean_best = (df_result['Mean_best'] - min_value) / (df_result['Mean_best'].max() - min_value)
 
-        if df_result['Iter'].max() == 0:
-            Iter = 0
+        if df_result['Mean_acc'].max() == 0:
+            Mean_acc = 0
         else:
-            Iter = df_result['Iter'] / df_result['Iter'].max()
+            Mean_acc = df_result['Mean_acc'] / df_result['Mean_acc'].max()
 
-        if df_result['MeanXCorr'].max() == 0:
-            MeanXCorr = 0
+        if df_result['Iteration'].max() == 0:
+            Iteration = 0
         else:
-            MeanXCorr = df_result['MeanXCorr'] / df_result['MeanXCorr'].max()
+            Iteration = df_result['Iteration'] / df_result['Iteration'].max()
 
-        if df_result['MeanVCorr'].max() == 0:
-            MeanVCorr = 0
-        else:
-            MeanVCorr = df_result['MeanVCorr'] / df_result['MeanVCorr'].max()
-
-        df_result['Criteria'] = BestFit  + Iter + MeanXCorr + MeanVCorr
+        df_result['Criteria'] = Mean_best - Mean_acc + Iteration
         df_result['BestRank'] = df_result['Criteria'].rank(ascending=False, pct=True)
         # Sort by rank and store in index vector
         df_result.sort_values(by='BestRank', ascending=False, inplace=True)
         index = df_result['setIdx'].values
-        df_result = pd.DataFrame(columns=["setIdx", "Swarm", "Omega", "phiP", "phiG",
-                                          "SwarmSize", "MaxIter", "BestFit", "avgSwarm",
-                                          "stdSwarm",
-                                          "MeanXCorr", "MeanVCorr", "Iter", "Time",])                                          
+        df_result = pd.DataFrame(columns=["setIdx", "Swarm", "phiP", "phiG",
+                                      "MaxIter", "BestScore", "Mean_best",
+                                      "Std_best", "Mean_f", "Mean_acc", "Std_acc",
+                                      "Max_acc", "Iteration", "Time",])                                          
 
-def parallel_pso(j, ri, domain, dim, setup, qmc_interval, problem, df_result, exp_min, test):
-    max_iter = int(ri/25) # might be connected with the algorithm as the resource
-    swarm_size = 10 # might be connected with the algorithm as the resource
 
-    start = time.time()
-    
-    if len(domain) == np.size(domain):
-        results = pso(dim, swarm_size, domain, setup[j], j, qmc_interval, problem, max_iter, exp_min, test)
-    else:
-        results = pso_domain(dim, swarm_size, domain, setup[j], j, qmc_interval, problem, max_iter, exp_min, test)
-
-    finish = time.time()
-    t = round(finish - start, 5)
-
-    if (j < qmc_interval[0] or j > qmc_interval[1]):
-        decomposition_swarm = setup[j][0].dist.name
-    else:
-        decomposition_swarm = str(setup[j][0]).partition('qmc.')[2].partition("'")[0]
-
-    decomposition_w = setup[j][1].dist.name
-    decomposition_phi_p = setup[j][2].dist.name
-    decomposition_phi_g = setup[j][3].dist.name
-
-    df_result.loc[len(df_result)] = [j, decomposition_swarm, decomposition_w,
-                                     decomposition_phi_p, decomposition_phi_g,
-                                     swarm_size, max_iter]+ results + [t]
-    df_new_row = pd.DataFrame([[j, decomposition_swarm, decomposition_w,
-                                decomposition_phi_p, decomposition_phi_g,
-                                swarm_size, max_iter]+ results + [t]], 
-                                columns=df_result.columns)
-    df_new_row.to_csv(f"resultSHA-{str(problem).split(' ')[1]}.csv", mode='a', header=False, index=False)  
     
     
 
